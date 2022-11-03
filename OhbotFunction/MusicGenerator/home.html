@@ -191,13 +191,20 @@
           transform: rotate(45deg);
         }
 
+        midi-player {
+          display: block;
+          width: inherit;
+          margin: 4px;
+          margin-bottom: 0;
+        }
+
 
 
         midi-player::part(control-panel) {
           background: #404040;
           border: 2px solid #000;
           color: white;
-          border-radius: 10px 10px 10px 10px;
+          border-radius: 10px 10px 0px 0px;
         }
 
         
@@ -227,7 +234,32 @@
         midi-player::part(control-timeline) {
           background-color: #c540c1;
         }
+
+        midi-visualizer .piano-roll-visualizer {
+          background: white;
+          border: 2px solid #000;
+          border-top: none;
+          border-radius: 0 0 10px 10px;
+          margin: 4px;
+          margin-top: 0;
+          overflow: auto;
+        }
+        midi-visualizer svg rect.note {
+          opacity: 1;
+          stroke-width: 2;
+          fill: #888;
+          stroke: #888;
+        }
+        midi-visualizer svg rect.note[data-instrument="0"]{
+          fill: #c540c1;
+          stroke: solid #000;
+        }
         
+        midi-visualizer svg rect.note.active {
+          opacity: 0.9;
+          stroke: #000;
+          fill: #181818;
+        }
 
   
 
@@ -273,6 +305,7 @@
       
       <div>
           <midi-player src="/static/asus2.mid" sound-font visualizer=""></midi-player>
+          <midi-visualizer src="/static/asus2.mid"></midi-visualizer>
         
 
         <center><input type="submit" value="Submit" onclick="document.getElementById('sus').submit();"></center>
