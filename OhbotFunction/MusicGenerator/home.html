@@ -25,7 +25,7 @@
 
         .main_flex{
           display: flex;
-          gap: 26%;
+          gap: 21%;
           flex-direction: row;
           margin: 30px;
           color: 	#c540c1;
@@ -232,11 +232,11 @@
         }
 
         midi-player::part(control-timeline) {
-          background-color: #c540c1;
+          color: #c540c1;
         }
 
         midi-visualizer .piano-roll-visualizer {
-          background: white;
+          background: #181818;
           border: 2px solid #000;
           border-top: none;
           border-radius: 0 0 10px 10px;
@@ -247,18 +247,48 @@
         midi-visualizer svg rect.note {
           opacity: 1;
           stroke-width: 2;
-          fill: #888;
-          stroke: #888;
+          fill: #c540c1;
+          stroke: #c540c1;
         }
         midi-visualizer svg rect.note[data-instrument="0"]{
           fill: #c540c1;
-          stroke: solid #000;
+          stroke: #c540c1;
         }
         
-        midi-visualizer svg rect.note.active {
-          opacity: 0.9;
-          stroke: #000;
-          fill: #181818;
+        midi-visualizer svg rect.note.active[data-instrument="0"] {
+          opacity: 1;
+          stroke: white;
+          fill: white;
+        }
+
+        .player_box{
+          width: 400px;
+          padding-top: 10px;
+        }
+
+        .submit_button{
+          border: 4px solid #000;
+          background-color: #c540c1;
+          color: black;
+          font-size: 30px;
+          font-family: "Century Gothic";
+          transition-duration: 0.4s;
+          cursor: pointer;
+          padding: 16px 32px;
+          border-radius: 40px 40px 40px 40px;
+          opacity: 0.7;
+          box-shadow: 8px 10px 10px 1px rgb(0, 0, 0);
+
+        }
+
+        .submit_button:hover{
+          opacity: 1;
+
+        }
+
+        .butt_div{
+
+          padding-top: 30px;
         }
 
   
@@ -303,13 +333,17 @@
 
 
       
-      <div>
-          <midi-player src="/static/asus2.mid" sound-font visualizer=""></midi-player>
-          <midi-visualizer src="/static/asus2.mid"></midi-visualizer>
-        
+      <div class="player_box">
+        <midi-player src="/static/asus2.mid" sound-font visualizer=""></midi-player>
+        <midi-visualizer src="/static/asus2.mid"></midi-visualizer>
 
-        <center><input type="submit" value="Submit" onclick="document.getElementById('sus').submit();"></center>
+
+        <div class="butt_div">
+          <center><input type="button" value="Generate" class="submit_button" onclick="document.getElementById('sus').submit();"></center>
+        </div>
+
       </div>
+      
 
     </div>
 
