@@ -1,0 +1,204 @@
+// General
+body {
+  	display: grid;
+  	place-content: center;
+
+  	min-height: 100vh;
+  	margin: 0;
+ 	padding: 1rem;
+ 	box-sizing: border-box;
+  	background-color: hsl(0, 0%, 95%);
+
+	--gradient: linear-gradient(to right bottom, hsl(155, 90%, 60%), hsl(225, 90%, 60%));
+}
+
+body, .text {font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Open Sans', sans-serif}
+
+.text {font-size: 15px}
+
+h3 {
+  	letter-spacing: 3px;
+ 	text-align: center;
+  	color: hsl(0, 0%, 30%);
+}
+
+.card {
+ 	background-color: #fff;
+  	border-radius: 2rem;
+ 	padding: 2rem;
+  	margin-bottom: 2rem;
+  	box-shadow: hsl(0, 0%, 93%) 1px 1px 15px;
+}
+
+// Compute button
+.btn-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+button {
+	--width: 180px;
+	--height: 60px;
+	border: 0;
+	position: relative;
+	min-width: var(--width);
+	min-height: var(--height);
+	border-radius: var(--height);
+	color: #fff;
+	font-weight: bold;
+	background: rgba(0, 0, 0, 0.3);
+	cursor: pointer;
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0 1rem;
+	box-shadow: hsl(0, 0%, 93%) 1px 1px 15px;
+
+	.text,
+	.icon-container {
+		position: relative;
+		z-index: 2;
+	}
+
+	.icon-container {
+		--icon-size: 25px;
+		position: relative;
+		width: var(--icon-size);
+		height: var(--icon-size);
+		margin-left: 15px;
+
+		.icon--right {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: var(--icon-size);
+			height: var(--icon-size);
+			transition: transform .5s ease, opacity 250ms ease;
+			svg {
+				width: 100%;
+				height: 100%;
+				fill: #fff;
+			}
+		}
+	}
+
+	&::after {
+		content: "";
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background: var(--gradient);
+		border-radius: var(--height);
+		z-index: 1;
+		transition: transform .5s ease;
+	}
+
+	&:hover {
+		&::after {transform: translateX(65%)}
+		.icon--right {transform: translateX(80%)}
+	}
+}
+
+// File select buttons
+[type="file"] {
+	height: 0;
+	overflow: hidden;
+	width: 0;
+}
+
+[type="file"] + label {
+	color: #fff;
+	display: inline-block;
+	padding: 1rem 50px;
+	position: relative;
+	transition: .3s;
+	vertical-align: middle;
+	cursor: pointer;
+
+  	&.btn-2 {
+		background-color: hsl(155, 60%, 60%);
+		border-radius: 50px;
+		overflow: hidden;
+		box-shadow: hsl(0, 0%, 93%) 1px 1px 15px;
+
+		.icon--up {
+			opacity: 0;
+			position: absolute;
+			left: 1rem;
+			top: 0.9rem;
+			transform: translateX(-100%);
+			transition: .3s;
+		}
+
+	    &:hover {
+		    background-color: darken(hsl(155, 60%, 60%), 20%);
+
+			.icon--up {
+				transform: translateX(0%);
+				opacity: 1;
+			}
+    	}
+  	}
+}
+
+.icon-container {transition: transform .5s ease}
+
+
+// Radio buttons
+.radius-label {
+	display: flex;
+	align-items: center;
+	border-radius: 100px;
+	padding: 14px 16px;
+	margin: 10px 0;
+	cursor: pointer;
+	transition: .3s;
+	&:hover, &:focus-within, &:active, &:has(input:checked) {background: hsla(0, 0%, 80%, .15)}
+
+	input {position:absolute; opacity: 0}
+
+	.radius-design {
+		width: 22px;
+		height: 22px;
+		border-radius: 100px;
+		background: var(--gradient);
+		position: relative;
+
+		&::before {
+			content: '';
+			display: inline-block;
+			width: inherit;
+			height: inherit;
+			border-radius: inherit;
+			background: hsl(0, 0%, 90%);
+			transform: scale(1.1);
+			transition: .3s;
+		}
+	}
+
+	input:checked+.radius-design::before {transform: scale(0)}
+
+	.radius-text {
+		color: hsl(0, 0%, 50%);
+		margin-left: 0.9rem;
+		letter-spacing: 1px;
+		font-size: 1.1rem;
+		font-weight: bold;
+		transition: .3s;
+
+		.radius-speed {
+			letter-spacing: normal;
+			font-size: 0.75rem;
+			font-weight: normal;
+			transition: .3s;
+		}
+	}
+
+	input:checked~.radius-text {
+		color: hsl(0, 0%, 40%);
+	}
+}

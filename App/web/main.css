@@ -1,0 +1,26 @@
+body {
+  display: grid;
+  place-content: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 1rem;
+  box-sizing: border-box;
+  background-color: hsl(0deg, 0%, 95%);
+  --gradient: linear-gradient(to right bottom, hsl(155, 90%, 60%), hsl(225, 90%, 60%));
+}
+
+body, .text {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Open Sans", sans-serif;
+}
+
+.text {
+  font-size: 15px;
+}
+
+.img-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/*# sourceMappingURL=main.css.map */
