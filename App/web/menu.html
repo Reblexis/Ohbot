@@ -8,9 +8,9 @@
         <script type="text/javascript" src= "communicator.js"></script>
         <link href="/main.css" rel="stylesheet" />
     </head>
-    
+
     <body>
-        <h1>Ohbot controls.</h1>
+        <h1>Ohbot.</h1>
         <script>
             document.onkeypress = function (e)
             {
@@ -20,9 +20,7 @@
         </script>
 
         <body>
-            <label for="command_input">Command</label>
-            <input type="text" name="command_input" id="command_input"/>
-            <button type="button" onclick="eel.send_command(document.getElementById('command_input').value)">Send</button>
+            <button type="button" onclick="eel.connect()">Connect</button>
             <div class="error_message">
                 <p id="error_message"></p>
             </div>

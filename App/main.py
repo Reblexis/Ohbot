@@ -1,3 +1,4 @@
-import communicator
+from App.WebCommunication import sender
+from App.WebCommunication import receiver
 
-communicator.launch_web()
+sender.launch_web()
