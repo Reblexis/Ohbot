@@ -2,9 +2,9 @@ import re
 
 from App.WebCommunication import sender
 
-from OhbotFunction.controller import OhbotController
+from Function.controller import OhbotController
 
-DEFAULT_ROTATE_ARGS = {"obj": "head", "horizontal": 5, "vertical": 5}
+DEFAULT_ROTATE_ARGS = {"obj": "head", "horizontal": 0.5, "vertical": 0.5}
 
 
 class CommandManager:

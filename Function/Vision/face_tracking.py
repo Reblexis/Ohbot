@@ -1,7 +1,7 @@
 # import the opencv library
 import cv2
 from ohbot import ohbot
-from OhbotFunction import controller
+from Function import controller
 import mediapipe as mp
 import math
 import os

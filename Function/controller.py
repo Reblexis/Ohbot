@@ -1,7 +1,7 @@
 import serial
 import serial.tools.list_ports
 
-from OhbotFunction.helpful_functions import checkPort, secure_val, denormalize
+from Function.helpful_functions import checkPort, secure_val, denormalize
 
 HEAD_NOD = 0
 HEAD_TURN = 1

@@ -2,7 +2,7 @@ import eel
 
 from App.WebCommunication import sender
 from App.Controls.command_manager import CommandManager
-from OhbotFunction.controller import OhbotController
+from Function.controller import OhbotController
 
 
 class Receiver:
