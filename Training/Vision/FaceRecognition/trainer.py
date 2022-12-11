@@ -33,7 +33,7 @@ def load_model(path: Path):
 def initialize_model_pipeline(specs: dict, to_train: bool = True) -> tuple:
     model_data_path = MODELS_FOLDER / f"Model_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}"
 
-    input_transformer = torch.nn.Sequential(transforms.Resize(INPUT_DIMENSIONS), )
+    input_transformer = torch.nn.Sequential(transforms.Resize(INPUT_DIMENSIONS))
 
     model_architecture = SiameseNetwork
 
@@ -48,18 +48,19 @@ def initialize_model_pipeline(specs: dict, to_train: bool = True) -> tuple:
         cur_train_test_sets = None
         evaluation_loader = None
 
-    model = model_architecture(torch.nn.CrossEntropyLoss(), torch.optim.Adam, cur_train_test_sets,
-                               (INPUT_DIMENSIONS, output_extractor.total_size), specs)
+    model = model_architecture(torch.nn.MSELoss(), torch.optim.Adam, cur_train_test_sets,
+                               (INPUT_DIMENSIONS, ()), specs)
     if to_train:
+        ensure_dir(WANDB_FOLDER)
         wandb_logger = pl.loggers.WandbLogger(project=WANDB_PROJECT_NAME, name=model_data_path.name,
                                               save_dir=WANDB_FOLDER)
         wandb_logger.experiment.config.update(specs)
 
         checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=model_data_path / MODEL_CHECKPOINTS_FOLDER,
-                                                           save_top_k=1, monitor="val_f1", mode="max",
+                                                           save_top_k=1, monitor="val_acc", mode="max",
                                                            filename=TOP_MODEL_NAME)
-        early_stopping_callback = EarlyStopping(monitor="val_f1", patience=specs["early_stopping_patience"], mode="max")
-        trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=specs["epochs"], enable_progress_bar=True,
+        early_stopping_callback = EarlyStopping(monitor="val_acc", patience=specs["early_stopping_patience"], mode="max")
+        trainer = pl.Trainer(accelerator="cpu", devices=1, max_epochs=specs["epochs"], enable_progress_bar=True,
                              logger=wandb_logger, callbacks=[checkpoint_callback, early_stopping_callback])
         trainer.fit(model)
 
@@ -68,13 +69,13 @@ def initialize_model_pipeline(specs: dict, to_train: bool = True) -> tuple:
 
         wandb.finish()
 
-    return model.to(DEVICE), input_transformer, output_extractor
+    return model.to(DEVICE), input_transformer
 
 
 def train(overwrite: dict = None):
     train_specs = {
         "description": "",
-        "dataset_path": DATASETS.DIGI_FACE,
+        "dataset_path": DATASETS.DIGI_FACE.name,
         "evaluation_set": EVALUATION_SAMPLES_DF.name,
         "epochs": EPOCHS,
         "batch_size": BATCH_SIZE,

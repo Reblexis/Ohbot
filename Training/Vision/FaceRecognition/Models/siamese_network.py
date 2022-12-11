@@ -68,14 +68,15 @@ class SiameseNetwork(Model):
         self.fc2 = nn.Sequential(
             LinearBlock(32, 32),
             LinearBlock(32, 32),
-            nn.Linear(32, 1)
+            nn.Linear(32, 1),
+            nn.Sigmoid()
         )
         self.all_layers = nn.Sequential(self.cnn, self.flatten_layer, self.fc)
 
     def forward(self, x):
-        # X shape (batch_size, 2, 128, 128) (2 because of the 2 images to be compared)
-        x1 = self.all_layers(x[:, 0, :, :].unsqueeze(1))
-        x2 = self.all_layers(x[:, 1, :, :].unsqueeze(1))
+        # X shape (batch_size, 2, 1, 128, 128) (2 because of the 2 images to be compared)
+        x1 = self.all_layers(x[:, 0, :, :, :])
+        x2 = self.all_layers(x[:, 1, :, :, :])
         concatenated = torch.cat((x1, x2), dim=1)
         y = self.fc2(concatenated)
         return y

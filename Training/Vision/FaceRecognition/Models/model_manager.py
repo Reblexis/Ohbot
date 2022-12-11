@@ -16,6 +16,12 @@ class IntHandler:
         return text
 
 
+import torch
+import wandb
+import pytorch_lightning as pl
+from pytorch_lightning.loggers import WandbLogger
+
+
 class Model(pl.LightningModule):
     def __init__(self, loss_function, optimizer, train_test_sets: tuple, input_output_shape: tuple,
                  hyper_params: dict):
@@ -58,8 +64,6 @@ class Model(pl.LightningModule):
         x, y = batch
 
         y_hat = self(x)
-        if stage != "train":
-            y_hat[:] *= self.evaluation_tensor
         loss = self.loss_function(y_hat, y)
         self._common_log(y_hat, y, stage)
 

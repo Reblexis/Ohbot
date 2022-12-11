@@ -15,7 +15,7 @@ def get_train_test_sets(dataset_path: Path, input_transformer,
     val_set = SiameseDataset(dataset_path, input_transformer, VAL_TYPE,
                              seed=random_seed, use_cache=use_cache)
 
-    evaluation_set = SiameseDataset(evaluation_df, input_transformer, -1)
+    evaluation_set = SiameseDataset(evaluation_df, input_transformer, -1, dataset_size=1000)
     evaluation_loader = DataLoader(evaluation_set, batch_size=batch_size, shuffle=False)
 
     return (train_set, test_set, val_set), evaluation_loader
