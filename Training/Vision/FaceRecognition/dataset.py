@@ -13,7 +13,7 @@ import numpy as np
 
 class SiameseDataset(Dataset):
     def __init__(self, dataset: Path, input_transformer: torch.nn.Module,
-                 dataset_type: int, seed: int = 1, use_cache: bool = True):
+                 dataset_type: int, seed: int = 1, use_cache: bool = True, dataset_size: int = 500):
         self.input_transformer = input_transformer
 
         # Cache
@@ -25,8 +25,6 @@ class SiameseDataset(Dataset):
             self.samples_df = load_file(dataset / DATASET_SAMPLES_DF)
 
             self.samples_df = self.samples_df.sample(frac=1, random_state=seed)  # shuffle
-            # Take only first 1500 samples
-            self.samples_df = self.samples_df.iloc[:1500]
 
             self.evaluation_df = load_file(EVALUATION_SAMPLES_DF)
             or_length = len(self.samples_df)
@@ -41,21 +39,25 @@ class SiameseDataset(Dataset):
 
         # Create list of paths for each person separately
         people = self.samples_df["person_id"].unique()
+
+        # Select only first 100 people
         self.paths = []
         for person in people:
             self.paths.append(list(self.samples_df[self.samples_df["person_id"] == person]["path"]))
 
         # Train / test split
         if dataset_type != -1:
+            self.dataset_size = math.floor(dataset_size * (TRAIN_TEST_SPLIT[dataset_type+1] -
+                                                           TRAIN_TEST_SPLIT[dataset_type]))
             num_people = len(people)
             self.paths = self.paths[math.floor(TRAIN_TEST_SPLIT[dataset_type] * num_people): math.floor(
                 TRAIN_TEST_SPLIT[dataset_type + 1] * num_people)]
 
     def preprocess_sample(self, sample_paths: list):
-
         sample = torch.stack(
             [self.input_transformer((torchvision.io.read_image(path)).type(torch.float32)) for path in
              sample_paths])
+        sample/=255
         return sample
 
     def save_processed_sample(self, item: int, sample: torch.tensor, label: torch.tensor):
@@ -72,7 +74,7 @@ class SiameseDataset(Dataset):
             return load_file(PREPROCESSED_SAMPLES_FOLDER / f"{item}.pt"), self.cache[item]
 
     def __len__(self):
-        return len(self.samples_df)
+        return self.dataset_size
 
     def __getitem__(self, item):
         if item not in self.cache:
