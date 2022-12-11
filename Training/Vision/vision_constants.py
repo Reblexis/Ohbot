@@ -1,5 +1,3 @@
-from Training.training_constants import *
+from Training import training_constants as tc
 
-VISION_FOLDER = DATA_FOLDER / "Vision"
-
-
+DATA_FOLDER = tc.DATA_FOLDER / "Vision"

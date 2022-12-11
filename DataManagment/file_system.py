@@ -6,6 +6,7 @@ import json
 import numpy as np
 import soundfile as sf
 import librosa
+import cv2
 import torch
 
 
@@ -53,6 +54,9 @@ def save_to_file(to_save, file_path: Path, additional_info=None):
         sf.write(file_path, to_save, additional_info["sample_rate"])
     elif type(to_save) == torch.Tensor:
         torch.save(to_save, file_path)
+    elif type(to_save) == np.ndarray and additional_info["type"] == "image":
+        file_path = file_path.as_posix() if file_path.name.endswith(".png") else f"{file_path}.png"
+        cv2.imwrite(file_path, to_save)
     else:
         raise NotImplementedError(f"Saving of this type: {type(to_save)} isn't implemented yet. File: {file_path} .")
 
@@ -68,5 +72,7 @@ def load_file(file_path: Path):
         return sample_rate, data
     elif file_path.suffix == ".pt":
         return torch.load(file_path)
+    elif file_path.suffix == ".png":
+        return cv2.imread(file_path.as_posix())
     else:
         raise NotImplementedError(f"Reading files of this object type isn't implemented yet. File: {file_path} .")

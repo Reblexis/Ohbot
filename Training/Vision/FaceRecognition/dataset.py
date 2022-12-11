@@ -1,23 +1,18 @@
-from OhbotTraining.Vision.FaceRecognition.hyperparameters import *
+from Training.Vision.FaceRecognition.face_recognition_hyperparameters import *
+from Training.training_constants import *
 from DataManagment.file_system import load_file, save_to_file
-from OhbotTraining.Extractors.index_extractor import IndexExtractor
+from Training.Extractors.index_extractor import IndexExtractor
 
 import math
 import random
 from torch.utils.data import Dataset
 import torch
 import torchvision
-from torchvision import transforms
 import numpy as np
-
-cur_input_transformer = torch.nn.Sequential(
-    transforms.Grayscale(num_output_channels=1),
-    transforms.Resize((128, 128)),
-)
 
 
 class SiameseDataset(Dataset):
-    def __init__(self, input_transformer: torch.nn.Module, index_extractor: IndexExtractor, samples_df: Path,
+    def __init__(self, dataset: Path, input_transformer: torch.nn.Module,
                  dataset_type: int, seed: int = 1, use_cache: bool = True):
         self.input_transformer = input_transformer
 
@@ -27,7 +22,7 @@ class SiameseDataset(Dataset):
 
         # Loading and filtering dataframe
         if dataset_type != -1:
-            self.samples_df = load_file(samples_df)
+            self.samples_df = load_file(dataset / DATASET_SAMPLES_DF)
 
             self.samples_df = self.samples_df.sample(frac=1, random_state=seed)  # shuffle
 
@@ -39,14 +34,8 @@ class SiameseDataset(Dataset):
             self.samples_df = self.samples_df[~i1.isin(i2)]
 
             print(f"Filtered total of: {or_length - len(self.samples_df)} files!")
-
-            # Label extractor initialization to emotions present in dataset
-            index_extractor.init({"all_vals": self.samples_df["person"].unique()})
         else:
             self.samples_df = load_file(samples_df)
-
-        self.index_extractor = index_extractor
-        self.num_emotions = self.index_extractor.total_size
 
         # Create list of paths for each person separately
         people = self.samples_df["person"].unique()
@@ -91,9 +80,9 @@ class SiameseDataset(Dataset):
                 people = np.random.choice(len(self.paths), 2, replace=False)
                 paths = [random.choice(self.paths[people[0]]), random.choice(self.paths[people[1]])]
 
-            label: torch.Tensor = torch.tensor([same_person], dtype=torch.float32)
+            label = torch.tensor([same_person], dtype=torch.float32)
             x = self.preprocess_sample(paths)
-            self.save_processed_sample(item, x, y)
+            self.save_processed_sample(item, x, label)
         else:
             x, y = self.load_processed_sample(item)
         return x, y

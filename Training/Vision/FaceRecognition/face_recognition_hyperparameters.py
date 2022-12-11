@@ -1,3 +1,14 @@
+from face_recognition_constants import *
+
+# Data preprocessing
+INPUT_DIMENSIONS = (128, 128)
+
+# Training
 TRAIN_TEST_SPLIT = [0, 0.8, 0.9, 1]
 assert 0 <= TRAIN_TEST_SPLIT[0] < TRAIN_TEST_SPLIT[1] < TRAIN_TEST_SPLIT[2] < TRAIN_TEST_SPLIT[3] <= 1
+EPOCHS = 100
+BATCH_SIZE = 32
+NUM_WORKERS = 0
+LEARNING_RATE = 0.0005
+EARLY_STOPPING_PATIENCE = 5
 
