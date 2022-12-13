@@ -4,6 +4,8 @@ from DataManagment.file_system import clear_folder_content, ensure_dir, clear_fo
 import os
 import shutil
 
+input("Are you sure you want to move all files from subfolders to parent folder?")
+
 folder = RAW_DATASETS.DIGI_FACE
 
 ensure_dir(folder / "samples")

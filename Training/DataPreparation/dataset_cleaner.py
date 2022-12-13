@@ -24,7 +24,7 @@ def clean_dataset(dataset_to_clean: Path, process_function):
         if file.name.endswith(suffix):
             content = load_file(file)
 
-            content = convert_to_gray(content)
+            # content = convert_to_gray(content)
 
             data = process_function(file.name)  # File name at index 0
 

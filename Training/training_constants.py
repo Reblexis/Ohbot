@@ -1,9 +1,9 @@
 from pathlib import Path
 from collections import namedtuple
 
-DEVICE = "cpu"
+DEVICE = "cuda"
 
-DATA_FOLDER = Path("C:/Data/Ohbot/")
+DATA_FOLDER = Path("C:/Data/Personal/Ohbot/")
 assert DATA_FOLDER.exists()
 
 

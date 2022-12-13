@@ -13,7 +13,7 @@ import numpy as np
 
 class SiameseDataset(Dataset):
     def __init__(self, dataset: Path, input_transformer: torch.nn.Module,
-                 dataset_type: int, seed: int = 1, use_cache: bool = True, dataset_size: int = 500):
+                 dataset_type: int, seed: int = 1, use_cache: bool = True, dataset_size: int = 57600):
         self.input_transformer = input_transformer
 
         # Cache
@@ -47,17 +47,19 @@ class SiameseDataset(Dataset):
 
         # Train / test split
         if dataset_type != -1:
-            self.dataset_size = math.floor(dataset_size * (TRAIN_TEST_SPLIT[dataset_type+1] -
+            self.dataset_size = math.floor(dataset_size * (TRAIN_TEST_SPLIT[dataset_type + 1] -
                                                            TRAIN_TEST_SPLIT[dataset_type]))
             num_people = len(people)
             self.paths = self.paths[math.floor(TRAIN_TEST_SPLIT[dataset_type] * num_people): math.floor(
                 TRAIN_TEST_SPLIT[dataset_type + 1] * num_people)]
+        else:
+            self.dataset_size = dataset_size
 
     def preprocess_sample(self, sample_paths: list):
         sample = torch.stack(
             [self.input_transformer((torchvision.io.read_image(path)).type(torch.float32)) for path in
              sample_paths])
-        sample/=255
+        sample /= 255
         return sample
 
     def save_processed_sample(self, item: int, sample: torch.tensor, label: torch.tensor):
@@ -78,15 +80,14 @@ class SiameseDataset(Dataset):
 
     def __getitem__(self, item):
         if item not in self.cache:
-            same_person = np.random.randint(0, 2)
-            if same_person:
-                person = np.random.randint(0, len(self.paths))
-                paths = [random.choice(self.paths[person]), random.choice(self.paths[person])]
-            else:
+            different_person = np.random.randint(0, 2)
+            if different_person:
                 people = np.random.choice(len(self.paths), 2, replace=False)
                 paths = [random.choice(self.paths[people[0]]), random.choice(self.paths[people[1]])]
-
-            y = torch.tensor([same_person], dtype=torch.float32)
+            else:
+                person = np.random.randint(0, len(self.paths))
+                paths = [random.choice(self.paths[person]), random.choice(self.paths[person])]
+            y = torch.tensor([different_person], dtype=torch.float32)
             x = self.preprocess_sample(paths)
             self.save_processed_sample(item, x, y)
         else:

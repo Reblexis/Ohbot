@@ -23,15 +23,13 @@ from pytorch_lightning.loggers import WandbLogger
 
 
 class Model(pl.LightningModule):
-    def __init__(self, loss_function, optimizer, train_test_sets: tuple, input_output_shape: tuple,
+    def __init__(self, loss_function, optimizer, train_test_sets: tuple,
                  hyper_params: dict):
         super().__init__()
 
         self.loss_function = loss_function
         self.optimizer = optimizer
         self.hyperparams = hyper_params
-        self.input_shape = input_output_shape[0]
-        self.output_shape = input_output_shape[1]
 
         self.num_partitions = 3
         self.p_m = {"train": 0, "test": 1, "val": 2}  # partition mapping
@@ -78,7 +76,7 @@ class Model(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         stage = "test"
         outputs, labels, loss = self._common_step(batch, batch_idx, stage=stage)
-        return {"loss": loss, "outputs": outputs, "labels": labels}
+        return {"inputs": batch, "loss": loss, "outputs": outputs, "labels": labels}
 
     def validation_step(self, batch, batch_idx):
         stage = "val"
@@ -96,19 +94,31 @@ class Model(pl.LightningModule):
     def test_epoch_end(self, outs):
         outputs = torch.cat([tmp['outputs'] for tmp in outs])
         labels = torch.cat([tmp['labels'] for tmp in outs])
+        inputs = torch.cat([tmp['inputs'][0] for tmp in outs])
 
         outputs_cpu = outputs.cpu().detach().numpy()
-        predictions_cpu = outputs.argmax(dim=1).squeeze().tolist()
+        inputs_cpu = inputs.cpu().detach().numpy()
+        predictions_cpu = (outputs_cpu > 0.5).astype(int).squeeze()
         labels_cpu = labels.squeeze().tolist()
 
         accuracy = sklearn.metrics.accuracy_score(predictions_cpu, labels_cpu)
         balanced_accuracy = sklearn.metrics.balanced_accuracy_score(predictions_cpu, labels_cpu)
         f1 = sklearn.metrics.f1_score(predictions_cpu, labels_cpu, average="macro")
-        wandb.log({"media/test_confusion_matrix": wandb.plot.confusion_matrix(probs=outputs_cpu, y_true=labels_cpu,
-                                                                              class_names=self.evaluation_emotions)})
+
+        wandb.log({"media/test_confusion_matrix": wandb.plot.confusion_matrix(preds=predictions_cpu, y_true=labels_cpu,
+                                                                              class_names=["SAME", "DIFFERENT"])})
         self.log("test_accuracy", accuracy, prog_bar=True)
         self.log("test_balanced_accuracy", balanced_accuracy, prog_bar=True)
         self.log("test_f1_score", f1, prog_bar=True)
+
+        # Each input is of a shape (2, 64, 64), and is composed of two grayscale images
+        # Plot some examples of input images and their predictions
+        for i in range(15):
+            fig, (ax1, ax2) = plt.subplots(1, 2)
+            ax1.imshow(inputs_cpu[i][0].squeeze(), cmap="gray")
+            ax2.imshow(inputs_cpu[i][1].squeeze(), cmap="gray")
+            plt.title(f"Prediction: {predictions_cpu[i]}")
+            wandb.log({"media/test_examples": wandb.Image(fig)})
 
     def configure_optimizers(self):
         return self.optimizer(self.parameters(), lr=self.hyperparams["learning_rate"])

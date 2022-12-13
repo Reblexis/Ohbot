@@ -48,8 +48,7 @@ def initialize_model_pipeline(specs: dict, to_train: bool = True) -> tuple:
         cur_train_test_sets = None
         evaluation_loader = None
 
-    model = model_architecture(torch.nn.MSELoss(), torch.optim.Adam, cur_train_test_sets,
-                               (INPUT_DIMENSIONS, ()), specs)
+    model = model_architecture(torch.nn.MSELoss(), torch.optim.Adam, cur_train_test_sets, specs)
     if to_train:
         ensure_dir(WANDB_FOLDER)
         wandb_logger = pl.loggers.WandbLogger(project=WANDB_PROJECT_NAME, name=model_data_path.name,
@@ -59,8 +58,10 @@ def initialize_model_pipeline(specs: dict, to_train: bool = True) -> tuple:
         checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=model_data_path / MODEL_CHECKPOINTS_FOLDER,
                                                            save_top_k=1, monitor="val_acc", mode="max",
                                                            filename=TOP_MODEL_NAME)
-        early_stopping_callback = EarlyStopping(monitor="val_acc", patience=specs["early_stopping_patience"], mode="max")
-        trainer = pl.Trainer(accelerator="cpu", devices=1, max_epochs=specs["epochs"], enable_progress_bar=True,
+        early_stopping_callback = EarlyStopping(monitor="val_loss", patience=specs["early_stopping_patience"],
+                                                mode="min")
+        accelerator = "gpu" if DEVICE == "cuda" else None
+        trainer = pl.Trainer(accelerator=accelerator, devices=1, max_epochs=specs["epochs"], enable_progress_bar=True,
                              logger=wandb_logger, callbacks=[checkpoint_callback, early_stopping_callback])
         trainer.fit(model)
 
@@ -82,6 +83,9 @@ def train(overwrite: dict = None):
         "learning_rate": LEARNING_RATE,
         "early_stopping_patience": EARLY_STOPPING_PATIENCE,
         "random_seed": random.randint(0, 100000),
+        "input_dimensions": INPUT_DIMENSIONS,
+        "features_dim": FEATURES_DIM,
+        "grayscale": GRAYSCALE,
     }
     if overwrite is not None:
         train_specs.update(overwrite)
