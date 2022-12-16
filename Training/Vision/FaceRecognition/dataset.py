@@ -13,7 +13,7 @@ import numpy as np
 
 class SiameseDataset(Dataset):
     def __init__(self, dataset: Path, input_transformer: torch.nn.Module,
-                 dataset_type: int, seed: int = 1, use_cache: bool = True, dataset_size: int = 57600):
+                 dataset_type: int, seed: int = 1, use_cache: bool = True, dataset_size: int = 12800):
         self.input_transformer = input_transformer
 
         # Cache

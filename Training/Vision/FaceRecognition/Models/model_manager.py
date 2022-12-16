@@ -111,13 +111,15 @@ class Model(pl.LightningModule):
         self.log("test_balanced_accuracy", balanced_accuracy, prog_bar=True)
         self.log("test_f1_score", f1, prog_bar=True)
 
-        # Each input is of a shape (2, 64, 64), and is composed of two grayscale images
+        # Each input is of a shape (2, 3, 64, 64), and is composed of two RGB images
         # Plot some examples of input images and their predictions
         for i in range(15):
-            fig, (ax1, ax2) = plt.subplots(1, 2)
-            ax1.imshow(inputs_cpu[i][0].squeeze(), cmap="gray")
-            ax2.imshow(inputs_cpu[i][1].squeeze(), cmap="gray")
-            plt.title(f"Prediction: {predictions_cpu[i]}")
+            fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+            axes[0].imshow(inputs_cpu[i][0].transpose(1, 2, 0))
+            axes[1].imshow(inputs_cpu[i][1].transpose(1, 2, 0))
+            axes[2].imshow(inputs_cpu[i][0].transpose(1, 2, 0))
+            axes[2].imshow(inputs_cpu[i][1].transpose(1, 2, 0), alpha=0.5)
+            axes[2].set_title(f"Prediction: {predictions_cpu[i]}, Label: {labels_cpu[i]}")
             wandb.log({"media/test_examples": wandb.Image(fig)})
 
     def configure_optimizers(self):

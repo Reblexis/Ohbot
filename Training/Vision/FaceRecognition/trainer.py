@@ -6,6 +6,7 @@ from Training.Vision.FaceRecognition.face_recognition_hyperparameters import *
 from DataManagment.file_system import ensure_dir, save_to_file, load_file
 from Training.DataPipeline.data_loader import get_train_test_sets
 from Training.Vision.FaceRecognition.Models.siamese_network import SiameseNetwork
+from Training.Vision.FaceRecognition.Models.inception_resnet import InceptionResnetNetwork
 from Training.Extractors.index_extractor import IndexExtractor
 
 import pytorch_lightning as pl
@@ -35,7 +36,7 @@ def initialize_model_pipeline(specs: dict, to_train: bool = True) -> tuple:
 
     input_transformer = torch.nn.Sequential(transforms.Resize(INPUT_DIMENSIONS))
 
-    model_architecture = SiameseNetwork
+    model_architecture = InceptionResnetNetwork
 
     if to_train:
         cur_train_test_sets, evaluation_loader = get_train_test_sets(DATASETS.DIGI_FACE, input_transformer,

@@ -2,6 +2,7 @@ from Training.Vision.FaceRecognition.Models.model_manager import Model
 
 import torch
 import torch.nn as nn
+from facenet_pytorch import InceptionResnetV1
 
 
 class ConvBlock(nn.Module):
@@ -34,11 +35,13 @@ class LinearBlock(nn.Module):
     def __init__(self, in_features, out_features, dropout=0.2):
         super().__init__()
         self.linear = nn.Linear(in_features, out_features)
+        self.batch_norm = nn.BatchNorm1d(out_features)
         self.relu = nn.LeakyReLU()
         self.dropout = nn.Dropout(dropout) if dropout > 0 else None
 
     def forward(self, x):
         x = self.linear(x)
+        x = self.batch_norm(x)
         x = self.relu(x)
         if self.dropout is not None:
             x = self.dropout(x)
@@ -53,9 +56,9 @@ class L1Distance(nn.Module):
         return torch.abs(x1 - x2)
 
 
-class SiameseNetwork(Model):
+class InceptionResnetNetwork(Model):
     """
-    Convolutional model for face recognition.
+    Pretrained inception resnet model.
     Receives two images and outputs a similarity score between 0 and 1.
     """
 
@@ -64,39 +67,34 @@ class SiameseNetwork(Model):
         super().__init__(loss_function, optimizer, train_test_sets, hyper_params)
 
     def init_model(self):
-        # input_shape = (1, 64, 64) if grayscale else (3, 64, 64)
-        in_channels = 1 if self.hyperparams["grayscale"] else 3
-        self.cnn = nn.Sequential(
-            ConvBlock(in_channels=in_channels, out_channels=32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
-            ConvBlock(in_channels=32, out_channels=32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
-            MaxPoolBlock(),
-            ConvBlock(in_channels=32, out_channels=64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
-            ConvBlock(in_channels=64, out_channels=64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
-            MaxPoolBlock(),
-            ConvBlock(in_channels=64, out_channels=64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
-            ConvBlock(in_channels=64, out_channels=64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
-            MaxPoolBlock(),
-            ConvBlock(in_channels=64, out_channels=64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
-            ConvBlock(in_channels=64, out_channels=64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
-        )
-        self.flatten_layer = nn.Flatten()
-        self.fc = nn.Sequential(
-            LinearBlock(in_features=8192, out_features=512),
-            nn.Linear(512, out_features=self.hyperparams['features_dim']),
-            nn.Sigmoid(),
-        )
-        self.embedding = nn.Sequential(self.cnn, self.flatten_layer, self.fc)
-        print(self.embedding)
+        # input_shape = (3, 128, 128)
+        in_channels = 3
+        model = InceptionResnetV1(pretrained='vggface2')
+        # freeze the model
+        for param in model.parameters():
+            param.requires_grad = False
+        self.embedding = model
         self.l1_dist = L1Distance()
-        self.classifier_layer = nn.Sequential(nn.Linear(self.hyperparams['features_dim'], 1), nn.Sigmoid())
+        self.embedding_linear = nn.Sequential(
+            LinearBlock(512, 256),
+            LinearBlock(256, 128),
+        )
+        self.classifier_layer = nn.Sequential(
+            LinearBlock(128, 64),
+            LinearBlock(64, 32),
+            nn.Linear(32, 1),
+            nn.Sigmoid()
+        )
 
     def forward(self, x):
-        # X shape (batch_size, 2, 1, 128, 128) (2 because of the 2 images to be compared)
+        # X shape (batch_size, 2, 3, 128, 128) (2 because of the 2 images to be compared)
         x1 = self.embedding(x[:, 0, :, :, :])
         x2 = self.embedding(x[:, 1, :, :, :])
-        l1_distance = self.l1_dist(x1, x2)
-        output = self.classifier_layer(l1_distance)
-        return output
+        x1 = self.embedding_linear(x1)
+        x2 = self.embedding_linear(x2)
+        x = self.l1_dist(x1, x2)
+        x = self.classifier_layer(x)
+        return x
 
 
 def find_out_needed_shape():
