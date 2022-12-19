@@ -1,11 +1,6 @@
-from pathlib import Path
 from collections import namedtuple
 
-DEVICE = "cuda"
-
-DATA_FOLDER = Path("C:/Data/Personal/Ohbot/")
-assert DATA_FOLDER.exists()
-
+from constants import *
 
 # Data preparation
 DATASETS_FOLDER = DATA_FOLDER / "Datasets"

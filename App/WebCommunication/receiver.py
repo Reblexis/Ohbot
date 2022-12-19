@@ -1,8 +1,10 @@
 import eel
+import base64
 
 from App.WebCommunication import sender
 from App.Controls.command_manager import CommandManager
 from Function.controller import OhbotController
+from Function.Vision.vision_controller import VisionController
 
 
 class Receiver:

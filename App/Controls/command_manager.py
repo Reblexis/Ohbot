@@ -5,11 +5,12 @@ from App.WebCommunication import sender
 from Function.controller import OhbotController
 
 DEFAULT_ROTATE_ARGS = {"obj": "head", "horizontal": 0.5, "vertical": 0.5}
+DEFAULT_SET_ARGS = {"obj": "camera"}
 
 
 class CommandManager:
     def __init__(self, ohbot_controller: OhbotController):
-        self.commands = {"reset_all": self.reset, "rotate": self.rotate}
+        self.commands = {"reset_all": self.reset, "rotate": self.rotate, "set": self.set}
         self.ohbot_controller = ohbot_controller
 
     @staticmethod
@@ -18,14 +19,26 @@ class CommandManager:
             return args[key]
         return default
 
+    @staticmethod
+    def update_args(args: dict, default_args: dict):
+        for key, value in default_args.items():
+            if key not in args:
+                args[key] = value
+        return args
+
     def reset(self, args: dict):
         pass
 
     def rotate(self, args: dict):
-        cur_args = DEFAULT_ROTATE_ARGS.copy()
-        cur_args.update(args)
+        cur_args = self.update_args(args, DEFAULT_ROTATE_ARGS)
         self.ohbot_controller.rotate_head_to(horizontal=float(cur_args["horizontal"]),
                                              vertical=float(cur_args["vertical"]))
+
+    def set(self, args: dict):
+        cur_args = self.update_args(args, DEFAULT_SET_ARGS)
+        if cur_args["obj"] == "camera":
+            blob = self.ohbot_controller.vision_controller.show_camera_feed()
+            sender.send_image(blob)
 
     def execute_command(self, command: str):
         # command form should be "command_name arg1_name=arg1_value arg2_name=arg2_value..."

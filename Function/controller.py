@@ -2,6 +2,7 @@ import serial
 import serial.tools.list_ports
 
 from Function.helpful_functions import checkPort, secure_val, denormalize
+from Function.Vision.vision_controller import VisionController
 
 HEAD_NOD = 0
 HEAD_TURN = 1
@@ -18,7 +19,7 @@ MOTOR_DOWN_LIMITS = [25, 0, 68, 6, 0, 0, 93, 14]
 
 class OhbotController:
     def __init__(self):
-        pass
+        self.vision_controller = VisionController()
 
     def search_connection(self) -> bool:
         ports = serial.tools.list_ports.comports()

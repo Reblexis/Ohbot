@@ -25,10 +25,10 @@ def save_model_specs(path: Path, train_specs: dict):
 
 def load_model(path: Path):
     specs = load_file(path / MODEL_INFO_FILE)
-    cur_model, input_extractor, output_extractor = initialize_model_pipeline(specs, False)
+    cur_model, input_extractor = initialize_model_pipeline(specs, False)
     checkpoint = torch.load(path / MODEL_CHECKPOINTS_FOLDER / f"{TOP_MODEL_NAME}.ckpt")
     cur_model.load_state_dict(checkpoint['state_dict'])
-    return cur_model, input_extractor, output_extractor, specs
+    return cur_model, input_extractor, specs
 
 
 def initialize_model_pipeline(specs: dict, to_train: bool = True) -> tuple:

@@ -15,5 +15,9 @@ def hide_error():
     eel.show_error("")
 
 
+def set_variable(variable_name: str, variable_value):
+    eel.set_variable(variable_name, variable_value)
+
+
 def switch_to_console():
     eel.switch_to_console()

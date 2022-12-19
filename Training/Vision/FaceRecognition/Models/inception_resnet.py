@@ -53,7 +53,8 @@ class L1Distance(nn.Module):
         super().__init__()
 
     def forward(self, x1, x2):
-        return torch.abs(x1 - x2)
+        # Return summed L1 distance between x1 and x2, while keeping the batch dimension
+        return torch.sum(torch.abs(x1 - x2), dim=1, keepdim=True)
 
 
 class InceptionResnetNetwork(Model):
@@ -69,29 +70,17 @@ class InceptionResnetNetwork(Model):
     def init_model(self):
         # input_shape = (3, 128, 128)
         in_channels = 3
-        model = InceptionResnetV1(pretrained='vggface2')
+        self.embedding_model = InceptionResnetV1(pretrained='vggface2')
         # freeze the model
-        for param in model.parameters():
+        self.classifier_layer = nn.Sequential(nn.Linear(1, 1), nn.Sigmoid())
+        for param in self.embedding_model.parameters():
             param.requires_grad = False
-        self.embedding = model
         self.l1_dist = L1Distance()
-        self.embedding_linear = nn.Sequential(
-            LinearBlock(512, 256),
-            LinearBlock(256, 128),
-        )
-        self.classifier_layer = nn.Sequential(
-            LinearBlock(128, 64),
-            LinearBlock(64, 32),
-            nn.Linear(32, 1),
-            nn.Sigmoid()
-        )
 
     def forward(self, x):
-        # X shape (batch_size, 2, 3, 128, 128) (2 because of the 2 images to be compared)
-        x1 = self.embedding(x[:, 0, :, :, :])
-        x2 = self.embedding(x[:, 1, :, :, :])
-        x1 = self.embedding_linear(x1)
-        x2 = self.embedding_linear(x2)
+        # X shape (batch_size, 2, 3, 160, 160) (2 because of the 2 images to be compared)
+        x1 = self.embedding_model(x[:, 0, :, :, :]) if len(x.shape) == 5 else self.embedding_model(x[0, :, :, :])
+        x2 = self.embedding_model(x[:, 1, :, :, :]) if len(x.shape) == 5 else self.embedding_model(x[1, :, :, :])
         x = self.l1_dist(x1, x2)
         x = self.classifier_layer(x)
         return x

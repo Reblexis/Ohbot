@@ -13,7 +13,7 @@ EVALUATION_SAMPLES_DF = EVALUATION_FOLDER / "samples_17324809.csv"
 # Training
 USE_CACHE = False
 MODELS_FOLDER = DATA_FOLDER / "Models"
-MODEL_INFO_FILE = "model_info.json"
+MODEL_INFO_FILE = "model_info.txt"
 MODEL_CHECKPOINTS_FOLDER = "checkpoints"
 TOP_MODEL_NAME = "top_model"
 

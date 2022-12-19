@@ -1,21 +1,12 @@
 # import the opencv library
 import cv2
-from ohbot import ohbot
 from Function import controller
-import mediapipe as mp
 import math
 import os
 import time
 import random
 import threading
 
-# Camera parameters, used for calculating needed rotation to target
-HORIZONTAL_FOV = 70.42
-VERTICAL_FOV = 43.3
-VERTICAL_MOVE_SCALE = (VERTICAL_FOV / 90) * 10
-HORIZONTAL_MOVE_SCALE = (HORIZONTAL_FOV / 180) * 10
-
-TAKE_PHOTOS = False
 
 CAMERA_WIDTH = 1920
 CAMERA_HEIGHT = 1080

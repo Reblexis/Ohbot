@@ -6,19 +6,12 @@
         <!-- Include eel.js - note this file doesn't exist in the 'web' directory -->
         <script type="text/javascript" src= "/eel.js"></script>
         <script type="text/javascript" src= "communicator.js"></script>
+        <script type="text/javascript" src= "gui.js"></script>
         <link href="/main.css" rel="stylesheet" />
     </head>
     
     <body>
         <h1>Ohbot controls.</h1>
-        <script>
-            document.onkeypress = function (e)
-            {
-                e = e || window.event;
-                eel.answer_key_press(e.keyCode);
-            };
-        </script>
-
         <body>
             <label for="command_input">Command</label>
             <input type="text" name="command_input" id="command_input"/>
@@ -26,6 +19,7 @@
             <div class="error_message">
                 <p id="error_message"></p>
             </div>
+            <img id="bg" src="" alt="">
         </body>
 
         <svg style="display: none;">
