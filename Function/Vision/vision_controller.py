@@ -1,5 +1,6 @@
 import base64
 import cv2
+import matplotlib.image as mpimg
 import eel
 
 from Function.Vision.face_detection import FaceDetection
@@ -19,27 +20,25 @@ class VisionController:
         self.face_detection_pipeline = FaceDetection()
         self.face_recognition_pipeline = FaceRecognition()
 
-        self.admin_face = cv2.imread("admin_face.jpg")
+        self.show_camera = False
         print("Vision controller initialized!")
 
     def get_frame(self, face_detections: bool = False, face_recognition: bool = False) -> tuple:
         success, image = self.camera.read()
+        visualized_predictions = image.copy()
+        faces, visualized_predictions = self.face_detection_pipeline.predict(image, visualized_predictions)
+        faces, visualized_predictions = self.face_recognition_pipeline.predict_faces(faces, visualized_predictions)
 
-        detected_faces, visualized_prediction = self.face_detection_pipeline.predict(image)
-        image = visualized_prediction
-        for pos, face in detected_faces:
-            admin_probability = self.face_recognition_pipeline.predict(self.admin_face, face)
-            print("Admin probability: ", 1-admin_probability)
-
-        ret, jpeg = cv2.imencode('.jpg', image)
+        ret, jpeg = cv2.imencode('.jpg', visualized_predictions)
         return jpeg.tobytes()
 
     def gen(self):
-        while True:
+        while self.show_camera:
             frame = self.get_frame()
             yield frame
 
     def show_camera_feed(self):
+        self.show_camera = True
         y = self.gen()
         for each in y:
             blob = base64.b64encode(each)

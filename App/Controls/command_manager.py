@@ -5,7 +5,7 @@ from App.WebCommunication import sender
 from Function.controller import OhbotController
 
 DEFAULT_ROTATE_ARGS = {"obj": "head", "horizontal": 0.5, "vertical": 0.5}
-DEFAULT_SET_ARGS = {"obj": "camera"}
+DEFAULT_SET_ARGS = {"obj": "camera", "state": "on"}
 
 
 class CommandManager:
@@ -37,8 +37,11 @@ class CommandManager:
     def set(self, args: dict):
         cur_args = self.update_args(args, DEFAULT_SET_ARGS)
         if cur_args["obj"] == "camera":
-            blob = self.ohbot_controller.vision_controller.show_camera_feed()
-            sender.send_image(blob)
+            if cur_args["state"] == "on" and not self.ohbot_controller.vision_controller.show_camera:
+                self.ohbot_controller.vision_controller.show_camera_feed()
+            elif cur_args["state"] == "off" and self.ohbot_controller.vision_controller.show_camera:
+                self.ohbot_controller.vision_controller.show_camera = False
+                sender.hide_camera_feed()
 
     def execute_command(self, command: str):
         # command form should be "command_name arg1_name=arg1_value arg2_name=arg2_value..."

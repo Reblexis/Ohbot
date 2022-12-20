@@ -21,3 +21,7 @@ def set_variable(variable_name: str, variable_value):
 
 def switch_to_console():
     eel.switch_to_console()
+
+
+def hide_camera_feed():
+    eel.hideCameraFeed()
