@@ -50,10 +50,12 @@ def initialize_model_pipeline(specs: dict, to_train: bool = True) -> tuple:
         evaluation_loader = None
 
     model = model_architecture(torch.nn.MSELoss(), torch.optim.Adam, cur_train_test_sets, specs)
+
     if to_train:
         ensure_dir(WANDB_FOLDER)
         wandb_logger = pl.loggers.WandbLogger(project=WANDB_PROJECT_NAME, name=model_data_path.name,
                                               save_dir=WANDB_FOLDER)
+        wandb_logger.watch(model)
         wandb_logger.experiment.config.update(specs)
 
         checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=model_data_path / MODEL_CHECKPOINTS_FOLDER,

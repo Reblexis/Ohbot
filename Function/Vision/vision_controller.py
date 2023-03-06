@@ -7,6 +7,7 @@ from Function.Vision.face_detection import FaceDetection
 from Function.Vision.face_recognition import FaceRecognition
 
 CAMERA_DIMS = (1920, 1080)
+SHOWN_CAMERA_DIMS = (960, 540)
 CAMERA_PORT = 1
 
 
@@ -20,14 +21,19 @@ class VisionController:
         self.face_detection_pipeline = FaceDetection()
         self.face_recognition_pipeline = FaceRecognition()
 
+        self.face_detection_pipeline.visualize = True
+        self.face_recognition_pipeline.visualize = True
+
         self.show_camera = False
         print("Vision controller initialized!")
 
     def get_frame(self, face_detections: bool = False, face_recognition: bool = False) -> tuple:
         success, image = self.camera.read()
         visualized_predictions = image.copy()
-        faces, visualized_predictions = self.face_detection_pipeline.predict(image, visualized_predictions)
-        faces, visualized_predictions = self.face_recognition_pipeline.predict_faces(faces, visualized_predictions)
+        faces = self.face_detection_pipeline.predict(image, visualized_predictions)
+        faces = self.face_recognition_pipeline.predict_faces(faces, visualized_predictions)
+
+        visualized_predictions = cv2.resize(visualized_predictions, SHOWN_CAMERA_DIMS)
 
         ret, jpeg = cv2.imencode('.jpg', visualized_predictions)
         return jpeg.tobytes()

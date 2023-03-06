@@ -13,10 +13,12 @@ class FaceRecognition:
     """
     Predicts the probability that two images are different people. Works only on RGB images.
     """
+
     def __init__(self):
         self.model, self.input_extractor, self.specs = load_model(FACE_RECOGNITION_MODEL)
         self.admin_face = np.transpose(mpimg.imread(ADMIN_FACE_PATH), (2, 0, 1))
         self.model.eval()
+        self.visualize = False
 
     @staticmethod
     def draw_visualization(visualization_image: np.ndarray, face_infos: list) -> np.ndarray:
@@ -26,20 +28,21 @@ class FaceRecognition:
 
         return visualization_image
 
-    def predict_faces(self, faces: list, visualized_predictions: np.ndarray) -> tuple:
+    def predict_faces(self, faces: list, visualized_predictions: np.ndarray) -> list:
         faces_infos = []
         for i in range(len(faces)):
             face_info = faces[i]
             rgb_face = np.transpose(cv2.cvtColor(face_info.image, cv2.COLOR_BGR2RGB), (2, 0, 1))
             admin_probability = 1 - self.predict_pair(self.admin_face, rgb_face)
-            predicted_id = ADMIN_ID if admin_probability > 0.75 else UNKNOWN_ID
+            predicted_id = ADMIN_ID if admin_probability > 0.8 else UNKNOWN_ID
             new_face_info = FACE_INFO(face_info.x_min, face_info.x_max, face_info.y_min, face_info.y_max,
                                       face_info.image, predicted_id)
             faces_infos.append(new_face_info)
 
-        visualized_predictions = self.draw_visualization(visualization_image=visualized_predictions,
-                                                         face_infos=faces_infos)
-        return faces_infos, visualized_predictions
+        if self.visualize:
+            self.draw_visualization(visualization_image=visualized_predictions,
+                                    face_infos=faces_infos)
+        return faces_infos
 
     def predict_pair(self, image1: np.ndarray, image2: np.ndarray) -> float:
         """
