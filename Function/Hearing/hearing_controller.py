@@ -5,7 +5,7 @@ import torch
 
 from constants import *
 from DataManagment import file_system as fs
-from Function.Hearing import speech_recognition
+from Function.Hearing import speech_recognition_
 
 
 class HearingController:
@@ -20,8 +20,9 @@ class HearingController:
         self.stream = None
         self.last_buffer_length = 0
         self.p = pyaudio.PyAudio()
+        self.to_process = None
 
-        self.speech_recognition_pipeline = speech_recognition.SpeechRecognition()
+        self.speech_recognition_pipeline = speech_recognition_.SpeechRecognitionController()
         print("Hearing controller initialized!")
 
     def start_listening(self):
@@ -41,7 +42,7 @@ class HearingController:
             fs.save_to_file(self.buffer, Path("test.wav"), additional_info={"type": "audio", "sample_rate": 16000})
             self.buffer = self.buffer[max(self.buffer.shape[0] - self.MAX_BUFFER_LENGTH, 0):]
 
-            self.process_buffer()
+            self.to_process = self.buffer
 
             self.buffer = self.buffer[max(0, len(self.buffer) - self.MAX_BUFFER_LENGTH):]
             self.last_buffer_length = len(self.buffer)
@@ -50,8 +51,9 @@ class HearingController:
 
     def process_buffer(self):
         print("Processing buffer...")
-        buffer_tensor = torch.from_numpy(self.buffer).float().to(DEVICE)
-        print(f"Transcribed speech:{self.speech_recognition_pipeline.transcribe(buffer_tensor)}")
+        audio_int = (self.to_process * 32768).astype(np.int16)
+        print(np.max(audio_int))
+        print(f"Transcribed speech:{self.speech_recognition_pipeline.transcribe(audio_int)}")
 
 
 def concatenate(a, b):
