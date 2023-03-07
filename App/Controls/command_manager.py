@@ -4,7 +4,7 @@ from App.WebCommunication import sender
 
 from Function.controller import OhbotController
 
-DEFAULT_ROTATE_ARGS = {"obj": "head", "horizontal": 0.5, "vertical": 0.5}
+DEFAULT_ROTATE_ARGS = {"obj": "head", "horizontal": 0.5, "vertical": 0.5}  # Slight rotation to the right and up
 DEFAULT_SET_ARGS = {"obj": "camera", "state": "on"}
 
 

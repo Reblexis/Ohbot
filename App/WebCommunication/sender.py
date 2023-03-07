@@ -2,9 +2,10 @@ import eel
 
 
 def launch_web():
+    # start eel with firefox
     eel.init('web')
     eel.test_access()
-    eel.start('menu.html', size=(1500, 900))  # Start the web.
+    eel.start('menu.html', size=(1500, 900), mode='firefox')  # Start the web.
 
 
 def send_error(error):

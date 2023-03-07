@@ -17,11 +17,13 @@ def checkPort(p: str) -> bool:
 
         subString = "v1".encode('latin-1')
 
+        print(line)
         if line.find(subString) != -1:
             return True
         else:
             return False
-    except:
+    except serial.SerialException:
+        print("Permission error on port: " + p[0])
         return False
 
 

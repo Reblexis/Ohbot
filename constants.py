@@ -5,7 +5,7 @@ from DataManagment.file_system import ensure_dir, save_to_file, load_file
 
 DEVICE = "cuda"
 
-DATA_FOLDER = Path("C:/Data/Personal/Ohbot/")
+DATA_FOLDER = Path.home() / "Data" / "Ohbot"
 assert DATA_FOLDER.exists()
 
 OTHER_FOLDER = DATA_FOLDER / "Other"

@@ -6,17 +6,17 @@ import eel
 from Function.Vision.face_detection import FaceDetection
 from Function.Vision.face_recognition import FaceRecognition
 
-CAMERA_DIMS = (1920, 1080)
-SHOWN_CAMERA_DIMS = (960, 540)
-CAMERA_PORT = 1
-
 
 class VisionController:
+    CAMERA_DIMS = (1920, 1080)
+    SHOWN_CAMERA_DIMS = (960, 540)
+    CAMERA_PORT = -1
+
     def __init__(self):
         print("Initializing vision controller...")
-        self.camera = cv2.VideoCapture(CAMERA_PORT)
-        self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, CAMERA_DIMS[0])
-        self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, CAMERA_DIMS[1])
+        self.camera = cv2.VideoCapture(self.CAMERA_PORT)
+        self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.CAMERA_DIMS[0])
+        self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.CAMERA_DIMS[1])
 
         self.face_detection_pipeline = FaceDetection()
         self.face_recognition_pipeline = FaceRecognition()
