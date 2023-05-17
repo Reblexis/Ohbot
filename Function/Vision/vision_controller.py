@@ -31,9 +31,10 @@ class VisionController:
         success, image = self.camera.read()
         visualized_predictions = image.copy()
         faces = self.face_detection_pipeline.predict(image, visualized_predictions)
-        faces = self.face_recognition_pipeline.predict_faces(faces, visualized_predictions)
+        if face_recognition:
+            faces = self.face_recognition_pipeline.predict_faces(faces, visualized_predictions)
 
-        visualized_predictions = cv2.resize(visualized_predictions, SHOWN_CAMERA_DIMS)
+        visualized_predictions = cv2.resize(visualized_predictions, self.SHOWN_CAMERA_DIMS)
 
         ret, jpeg = cv2.imencode('.jpg', visualized_predictions)
         return jpeg.tobytes()
