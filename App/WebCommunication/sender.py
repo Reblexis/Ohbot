@@ -3,9 +3,9 @@ import eel
 
 def launch_web():
     # start eel with firefox
-    eel.init('web')
+    eel.init('templates')
     eel.test_access()
-    eel.start('menu.html', size=(1500, 900), mode='firefox')  # Start the web.
+    eel.start('menu.html', size=(1500, 900), mode='firefox')  # Start the templates.
 
 
 def send_error(error):

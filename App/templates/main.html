@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <title>Ohbot</title>
+        <!-- Include eel.js - note this file doesn't exist in the 'templates' directory -->
+        <script type="text/javascript" src= "communicator.js"></script>
+        <script type="text/javascript" src= "gui.js"></script>
+        <link href="../static/style.css" rel="stylesheet" />
+    </head>
+    
+    <body>
+        <h1>Ohbot controls.</h1>
+        <body>
+            <label for="command_input">Command</label>
+            <input type="text" name="command_input" id="command_input"/>
+            <button type="button" onclick="eel.send_command(document.getElementById('command_input').value)">Send</button>
+            <div class="error_message">
+                <p id="error_message"></p>
+            </div>
+            <img id="bg" src="" alt="">
+        </body>
+    </body>
+</html>

@@ -1,5 +1,5 @@
 # Ohbot
-The goal of this project is to develop a human-like robot artificial intelligence. This software is being developed for a mechanical robot head, which
+The goal of this project is to develop a human-like robot using artificial intelligence. This software is being developed for a mechanical robot head, which
 can rotate, blink, move its mouth and rotate its eyes. The robot is controlled by arduino-like microcontroller.
 
 ## Installation
