@@ -3,10 +3,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
         <title>Ohbot</title>
-        <!-- Include eel.js - note this file doesn't exist in the 'templates' directory -->
-        <script type="text/javascript" src= "/eel.js"></script>
-        <script type="text/javascript" src= "communicator.js"></script>
-        <link href="/style.css" rel="stylesheet" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <script type="text/javascript" src= "{{ url_for('static', filename='scripts/communicator.js') }}"></script>
+        <script type="text/javascript" src= "{{ url_for('static', filename='scripts/gui.js') }}"></script>
     </head>
 
     <body>

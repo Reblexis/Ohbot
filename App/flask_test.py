@@ -6,7 +6,7 @@ app = Flask(__name__)
 @app.route("/")
 def hello_world():
     print(os.getcwd())
-    return render_template('main.html')
+    return render_template('menu.html')
 
 
 if __name__ == "__main__":
