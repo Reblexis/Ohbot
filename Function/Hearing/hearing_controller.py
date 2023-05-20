@@ -16,7 +16,6 @@ class HearingController:
     LISTENER_CHUNK_SIZE = 1024 * 4
     MAX_BUFFER_LENGTH = 200000
     NEW_BUFFER_LENGTH = 100000
-    WAKE_WORDS = ["tars", "cars", "stars"]
 
     def __init__(self):
         print("Initializing hearing controller...")

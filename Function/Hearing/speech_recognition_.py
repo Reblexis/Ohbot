@@ -12,16 +12,23 @@ from DataManagment import file_system as fs
 
 class SpeechRecognitionController:
     """
-    Transcribes audio to text. Current version is using speech_recognition library.
+    Transcribes audio to text. Current version is using speech_recognition library combined with whisper for better
+    transcription. It works in the following manner:
+    1. Recognize smaller chunks of audio using speech_recognition library
+    2. If there is a wake word recognized in any of the chunks, start collecting all the following chunks
+    3. Stop when the person stops speaking to the robot (currently if not sufficient amount of words are recognized in
+     some period of time)
+    4. Transcribe the collected chunks using whisper
     """
 
     def __init__(self):
         print("Initializing speech recognition controller...")
         self.recognizer = sr.Recognizer()
-        openai.api_key = os.getenv("OPENAI_API_KEY")
+        fs.ensure_open_ai_api()
+        self.sample_rate = 16000
         print("Speech recognition controller initialized!")
 
-    def transcribe(self, audio: np.array, sample_rate=44100, precise: bool = False) -> str:
+    def transcribe(self, audio: np.array) -> str:
         byte_io = io.BytesIO(bytes())
         write(byte_io, sample_rate, audio)
         result_bytes = byte_io.read()

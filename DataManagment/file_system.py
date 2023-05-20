@@ -8,6 +8,7 @@ import soundfile as sf
 import librosa
 import cv2
 import torch
+import openai
 
 
 def clear_folder_content(folder_path: Path, including_folder: bool = False):
@@ -76,3 +77,10 @@ def load_file(file_path: Path):
         return cv2.imread(file_path.as_posix())
     else:
         raise NotImplementedError(f"Reading files of this object type isn't implemented yet. File: {file_path} .")
+
+
+def ensure_open_ai_api():
+    if not os.environ.get("OPENAI_API_KEY"):
+        with open("openai_api_key.txt") as file:
+            os.environ["OPENAI_API_KEY"] = file.read().strip()
+    openai.api_key = os.environ["OPENAI_API_KEY"]
