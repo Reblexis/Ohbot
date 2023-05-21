@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <title>Tars</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <script type="text/javascript" src= "{{ url_for('static', filename='scripts/communicator.js') }}"></script>
+        <script type="text/javascript" src= "{{ url_for('static', filename='scripts/gui.js') }}"></script>
+    </head>
+    
+    <body>
+        <h1 class="headline">Tars controls</h1>
+        <body>
+             <form method="POST">
+                <label for="command_input">Command</label>
+                <input type="text" name="command_input" id="command_input"/>
+                <button type="submit" name="trigger" class="submit_button" id="command_button" value="command">Send</button>
+            </form>
+
+            <div class="error_message">
+                {% if error %}
+                    <p id="error_message">Error: {{ error }}</p>
+                {% endif %}
+            </div>
+            <div class="col-lg-8  offset-lg-2">
+                {% if show_camera_feed %}
+                    <h3 class="mt-5">Camera Feed</h3>
+                    <img src="{{ url_for('camera_feed') }}" width="100%">
+                {% endif %}
+            </div>
+        </body>
+    </body>
+</html>
