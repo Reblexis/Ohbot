@@ -2,7 +2,6 @@ import serial
 import serial.tools.list_ports
 
 from Function.helpful_functions import checkPort, secure_val, denormalize
-from Function.Vision.vision_controller import VisionController
 from ohbot import ohbot
 HEAD_NOD = 0
 HEAD_TURN = 1
@@ -11,19 +10,18 @@ LID_BLINK = 3
 TOP_LIP = 4
 BOTTOM_LIP = 5
 EYE_TILT = 6
-OHBOT_MOTORS = [HEAD_NOD, HEAD_TURN, EYE_TURN, LID_BLINK, TOP_LIP, BOTTOM_LIP, EYE_TILT]
+MOTORS = [HEAD_NOD, HEAD_TURN, EYE_TURN, LID_BLINK, TOP_LIP, BOTTOM_LIP, EYE_TILT]
 
 MOTOR_UP_LIMITS = [90, 180, 140, 54, 99, 99, 165, 82]
 MOTOR_DOWN_LIMITS = [25, 0, 68, 6, 0, 0, 93, 14]
 
 
-class OhbotController:
+class PhysicalController:
     def __init__(self):
-        print("Initializing Ohbot controller...")
+        print("Initializing physical controller...")
         self.port = None
         self.ser = None
-        self.vision_controller = VisionController()
-        print("Ohbot controller initialized!")
+        print("Physical controller initialized!")
 
     def search_connection(self) -> bool:
         ports = serial.tools.list_ports.comports()
@@ -34,7 +32,7 @@ class OhbotController:
                 self.ser.timeout = 0.5
                 self.ser.write_timeout = 0.5
                 self.ser.flushInput()
-                print("Ohbot connected!")
+                print("Tars connected!")
                 return True
         return False
 
@@ -64,7 +62,7 @@ class OhbotController:
         self.rotate_head_vertical(vertical, speed)
 
     def disconnect(self):
-        for motor in OHBOT_MOTORS:
+        for motor in MOTORS:
             self.detach(motor)
         self.ser.close()
 
@@ -72,9 +70,9 @@ class OhbotController:
         ohbot.reset()
         ohbot.move(ohbot.HEADTURN, 5)
         ohbot.move(ohbot.HEADNOD, 5)
-        print("Ohbot motors reset!")
+        print("Motors reset!")
 
     def ohbot_rotate_head(self, horizontal: float, vertical: float):
         ohbot.move(ohbot.HEADTURN, horizontal)
         ohbot.move(ohbot.HEADNOD, vertical)
-        print("Ohbot head moved!")
+        print("Head moved!")

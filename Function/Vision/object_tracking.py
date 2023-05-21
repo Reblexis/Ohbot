@@ -1,6 +1,6 @@
 # import the opencv library
 import cv2
-from Function import controller
+from Function import physical_controller
 import math
 
 

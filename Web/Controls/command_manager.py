@@ -1,15 +1,15 @@
 import re
 
-from Function.controller import OhbotController
+from Function.Core.core_controller import CoreController
 
 DEFAULT_ROTATE_ARGS = {"obj": "head", "horizontal": 0.5, "vertical": 0.5}  # Slight rotation to the right and up
 DEFAULT_SET_ARGS = {"obj": "camera", "state": "on"}
 
 
 class CommandManager:
-    def __init__(self, ohbot_controller: OhbotController):
+    def __init__(self, core_controller: CoreController):
         self.commands = {"reset_all": self.reset, "rotate": self.rotate, "set": self.set}
-        self.ohbot_controller = ohbot_controller
+        self.core_controller = core_controller
 
     @staticmethod
     def get_arg(args, key, default):
@@ -29,17 +29,16 @@ class CommandManager:
 
     def rotate(self, args: dict):
         cur_args = self.update_args(args, DEFAULT_ROTATE_ARGS)
-        self.ohbot_controller.rotate_head_to(horizontal=float(cur_args["horizontal"]),
-                                             vertical=float(cur_args["vertical"]))
+        self.core_controller.rotate_head_to(horizontal=float(cur_args["horizontal"]),
+                                            vertical=float(cur_args["vertical"]))
 
     def set(self, args: dict):
         cur_args = self.update_args(args, DEFAULT_SET_ARGS)
         if cur_args["obj"] == "camera":
-            if cur_args["state"] == "on" and not self.ohbot_controller.vision_controller.show_camera:
-                self.ohbot_controller.vision_controller.show_camera_feed()
-            elif cur_args["state"] == "off" and self.ohbot_controller.vision_controller.show_camera:
-                self.ohbot_controller.vision_controller.show_camera = False
-                # sender.hide_camera_feed() # TODO: Implement this in Flask
+            if cur_args["state"] == "on" and not self.core_controller.vision_controller.show_camera:
+                self.core_controller.vision_controller.show_camera_feed()
+            elif cur_args["state"] == "off" and self.core_controller.vision_controller.show_camera:
+                self.core_controller.vision_controller.show_camera = False
 
     def execute_command(self, command: str) -> bool:
         # command form should be "command_name arg1_name=arg1_value arg2_name=arg2_value..."

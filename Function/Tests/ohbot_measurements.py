@@ -1,5 +1,5 @@
 from Function.helpful_functions import checkPort
-from Function.controller import OhbotController
+from Function.physical_controller import PhysicalController
 
-ohbot_controller = OhbotController()
+ohbot_controller = PhysicalController()
 ohbot_controller.rotate_head_to(0, 0, 0.1)

@@ -22,7 +22,12 @@
                     <p id="error_message">Error: {{ error }}</p>
                 {% endif %}
             </div>
-            <img id="bg" src="" alt="">
+            <div class="col-lg-8  offset-lg-2">
+                {% if show_camera_feed %}
+                    <h3 class="mt-5">Camera Feed</h3>
+                    <img src="{{ url_for('camera_feed') }}" width="100%">
+                {% endif %}
+            </div>
         </body>
     </body>
 </html>
