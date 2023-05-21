@@ -1,7 +1,7 @@
-eel.expose(test_access)
+
 function test_access()
 {
-    eel.python_log("Accessible!");
+
 }
 
 function show_error(error_message)

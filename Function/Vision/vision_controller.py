@@ -1,7 +1,6 @@
 import base64
 import cv2
 import matplotlib.image as mpimg
-import eel
 
 from Function.Vision.face_detection import FaceDetection
 from Function.Vision.face_recognition import FaceRecognition
@@ -50,4 +49,4 @@ class VisionController:
         for each in y:
             blob = base64.b64encode(each)
             blob = blob.decode("utf-8")
-            eel.showCameraFeed(blob)()
+            # eel.showCameraFeed(blob)()  # TODO: Replace with flask communication

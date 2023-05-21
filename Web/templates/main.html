@@ -2,20 +2,25 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-        <title>Ohbot</title>
+        <title>Tars</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
         <script type="text/javascript" src= "{{ url_for('static', filename='scripts/communicator.js') }}"></script>
         <script type="text/javascript" src= "{{ url_for('static', filename='scripts/gui.js') }}"></script>
     </head>
     
     <body>
-        <h1>Ohbot controls.</h1>
+        <h1 class="headline">Tars controls</h1>
         <body>
-            <label for="command_input">Command</label>
-            <input type="text" name="command_input" id="command_input"/>
-            <button type="button" onclick="eel.send_command(document.getElementById('command_input').value)">Send</button>
+             <form method="POST">
+                <label for="command_input">Command</label>
+                <input type="text" name="command_input" id="command_input"/>
+                <button type="submit" name="trigger" class="submit_button" id="command_button" value="command">Send</button>
+            </form>
+
             <div class="error_message">
-                <p id="error_message"></p>
+                {% if error %}
+                    <p id="error_message">Error: {{ error }}</p>
+                {% endif %}
             </div>
             <img id="bg" src="" alt="">
         </body>

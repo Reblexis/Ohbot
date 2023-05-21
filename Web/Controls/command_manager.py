@@ -1,7 +1,5 @@
 import re
 
-from App.WebCommunication import sender
-
 from Function.controller import OhbotController
 
 DEFAULT_ROTATE_ARGS = {"obj": "head", "horizontal": 0.5, "vertical": 0.5}  # Slight rotation to the right and up
@@ -41,19 +39,18 @@ class CommandManager:
                 self.ohbot_controller.vision_controller.show_camera_feed()
             elif cur_args["state"] == "off" and self.ohbot_controller.vision_controller.show_camera:
                 self.ohbot_controller.vision_controller.show_camera = False
-                sender.hide_camera_feed()
+                # sender.hide_camera_feed() # TODO: Implement this in Flask
 
-    def execute_command(self, command: str):
+    def execute_command(self, command: str) -> bool:
         # command form should be "command_name arg1_name=arg1_value arg2_name=arg2_value..."
         command_name, *args = command.split(" ")
         try:
             args = {arg.split("=")[0]: arg.split("=")[1] for arg in args}
         except:
-            sender.send_error("Invalid command format!")
-            return
+            return False
         if command_name in self.commands:
-            sender.hide_error()
             print(f"Executing command {command_name} with args {args}")
             self.commands[command_name](args)
+            return True
         else:
-            sender.send_error(f"Command {command_name} not found!")
+            return False

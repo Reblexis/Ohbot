@@ -2,18 +2,22 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-        <title>Ohbot</title>
+        <title>Tars</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
         <script type="text/javascript" src= "{{ url_for('static', filename='scripts/communicator.js') }}"></script>
         <script type="text/javascript" src= "{{ url_for('static', filename='scripts/gui.js') }}"></script>
     </head>
 
     <body>
-        <h1>Ohbot.</h1>
+        <h1 class="headline">TARS</h1>
         <body>
-            <button type="button" onclick="eel.connect()">Connect</button>
+            <form method="POST">
+                <button name="trigger" class="submit_button" type="submit" id="connect_button" value="connect">Connect</button>
+            </form>
             <div class="error_message">
-                <p id="error_message"></p>
+                {% if error %}
+                    <p id="error_message">Error: {{ error }}</p>
+                {% endif %}
             </div>
         </body>
     </body>
