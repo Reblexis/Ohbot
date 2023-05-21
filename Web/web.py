@@ -72,7 +72,7 @@ class Web:
         self.command_manager = CommandManager(self.control_manager.core_controller)
         self.app = Flask(__name__)
         self.app.add_url_rule('/', view_func=MenuPage.as_view('menu', self.control_manager))
-        self.app.add_url_rule('/main', view_func=MainPage.as_viFew('main', self.control_manager, self.command_manager))
+        self.app.add_url_rule('/main', view_func=MainPage.as_view('main', self.control_manager, self.command_manager))
         self.app.add_url_rule('/video_feed', view_func=CameraFeed.as_view('camera_feed', self.control_manager))
 
     def run(self, debug=False, port=5000, **options):
