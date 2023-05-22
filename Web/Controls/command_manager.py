@@ -29,8 +29,8 @@ class CommandManager:
 
     def rotate(self, args: dict):
         cur_args = self.update_args(args, DEFAULT_ROTATE_ARGS)
-        self.core_controller.rotate_head_to(horizontal=float(cur_args["horizontal"]),
-                                            vertical=float(cur_args["vertical"]))
+        self.core_controller.physical_controller.rotate_head_to(horizontal=float(cur_args["horizontal"]),
+                                                                vertical=float(cur_args["vertical"]))
 
     def set(self, args: dict):
         cur_args = self.update_args(args, DEFAULT_SET_ARGS)
