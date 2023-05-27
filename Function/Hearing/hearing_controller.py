@@ -14,8 +14,6 @@ from Function.Hearing import speech_recognition_
 class HearingController:
     LISTENING_RATE = 16000
     LISTENER_CHUNK_SIZE = 1024 * 4
-    MAX_BUFFER_LENGTH = 200000
-    NEW_BUFFER_LENGTH = 100000
 
     def __init__(self):
         print("Initializing hearing controller...")
@@ -44,32 +42,17 @@ class HearingController:
 
     def listen(self, in_data, frame_count, time_info, flag):
         audio_data = np.frombuffer(in_data, dtype=np.float32)
-        self.buffer = concatenate(self.buffer, audio_data)
-
-        if self.buffer.shape[0] >= self.last_buffer_length + self.NEW_BUFFER_LENGTH:
-            self.buffer = self.buffer[max(self.buffer.shape[0] - self.MAX_BUFFER_LENGTH, 0):]
-
-            self.to_process = self.buffer
-
-            self.buffer = self.buffer[max(0, len(self.buffer) - self.MAX_BUFFER_LENGTH):]
-            self.last_buffer_length = len(self.buffer)
+        self.process_chunk(audio_data)
 
         return in_data, pyaudio.paContinue
 
-    def process_buffer(self):
+    def process_audio_chunk(self, audio_chunk):
         print("Processing buffer...")
-        fs.save_to_file(self.to_process, Path("test.wav"), additional_info={"type": "audio", "sample_rate": 44100})
 
         audio_int = (self.to_process * 32768).astype(np.int16)
 
         transcription = self.speech_recognition_pipeline.transcribe(audio_int, sample_rate=44100)
         print(transcription)
-
-
-def concatenate(a, b):
-    if a is None:
-        return b
-    return np.concatenate([a, b])
 
 
 if __name__ == "__main__":
