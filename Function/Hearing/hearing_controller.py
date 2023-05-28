@@ -12,7 +12,7 @@ from Function.Hearing import speech_recognition_
 
 
 class HearingController:
-    LISTENING_RATE = 16000
+    LISTENING_RATE = 44100
     LISTENER_CHUNK_SIZE = 1024 * 4
 
     def __init__(self):
@@ -23,36 +23,28 @@ class HearingController:
         self.p = pyaudio.PyAudio()
         self.to_process = None
 
-        self.speech_recognition_pipeline = speech_recognition_.SpeechRecognitionController()
+        self.speech_recognition_pipeline = speech_recognition_.SpeechRecognitionController(self.LISTENING_RATE, 4)
         print("Hearing controller initialized!")
 
     def start_listening(self):
         self.stream = self.p.open(format=pyaudio.paFloat32,
                                   channels=1,
-                                  rate=44100,
+                                  rate=self.LISTENING_RATE,
                                   input=True,
                                   frames_per_buffer=self.LISTENER_CHUNK_SIZE,
                                   stream_callback=self.listen,
                                   input_device_index=7)
         self.stream.start_stream()
         while True:
-            if self.to_process is not None:
-                self.process_buffer()
-                self.to_process = None
+            self.process()
 
     def listen(self, in_data, frame_count, time_info, flag):
-        audio_data = np.frombuffer(in_data, dtype=np.float32)
-        self.process_chunk(audio_data)
+        self.speech_recognition_pipeline.receive_chunk(in_data)
 
         return in_data, pyaudio.paContinue
 
-    def process_audio_chunk(self, audio_chunk):
-        print("Processing buffer...")
-
-        audio_int = (self.to_process * 32768).astype(np.int16)
-
-        transcription = self.speech_recognition_pipeline.transcribe(audio_int, sample_rate=44100)
-        print(transcription)
+    def process(self):
+        self.speech_recognition_pipeline.process()
 
 
 if __name__ == "__main__":

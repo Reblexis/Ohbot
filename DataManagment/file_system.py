@@ -84,3 +84,10 @@ def ensure_open_ai_api():
         with open("openai_api_key.txt") as file:
             os.environ["OPENAI_API_KEY"] = file.read().strip()
     openai.api_key = os.environ["OPENAI_API_KEY"]
+
+
+def resample_audio(audio: np.ndarray, original_rate: int, target_rate: int) -> np.ndarray:
+    resampled_data = librosa.resample(y=audio, orig_sr=original_rate, target_sr=target_rate, res_type="linear",
+                                      fix=True,
+                                      scale=False)
+    return resampled_data
