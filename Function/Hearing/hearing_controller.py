@@ -44,7 +44,7 @@ class HearingController:
         return in_data, pyaudio.paContinue
 
     def process(self):
-        self.speech_recognition_pipeline.process()
+        speech_recognition_info = self.speech_recognition_pipeline.process()
 
 
 if __name__ == "__main__":

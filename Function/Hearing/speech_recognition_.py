@@ -28,6 +28,13 @@ class SpeechRecognitionController:
     SMALL_CHUNK_UPDATE = 1  # Seconds
     assert SMALL_CHUNK_UPDATE <= SMALL_CHUNK_SIZE
 
+    SPEECH_RECOGNITION_INFO_BASE = {
+        "short_transcription": "",
+        "long_transcription": "",
+        "wake_word": False,
+        "is_speaking": True,
+    }
+
     def __init__(self, chunk_sample_rate: int, bytes_per_sample: int):
         print("Initializing speech recognition controller...")
         self.recognizer = sr.Recognizer()
@@ -42,6 +49,7 @@ class SpeechRecognitionController:
         self.listening_deep = False
         self.long_buffer: bytearray = bytearray(b'')  # Used to collect all the audio after the wake word is recognized
 
+        self.speech_recognition_info: dict = {}  # Storage for data, that will be returned to the hearing controller
         print("Speech recognition controller initialized!")
 
     def receive_chunk(self, chunk: bytes):
@@ -50,30 +58,33 @@ class SpeechRecognitionController:
 
         self.short_buffer.extend(chunk)
 
-    def process(self):
+    def process(self) -> dict:
+        self.speech_recognition_info: dict = {}
         if len(self.short_buffer) >= self.SMALL_CHUNK_SIZE * self.bytes_per_second:
             self.short_buffer_save = self.short_buffer.copy()
             self.short_buffer = self.short_buffer[len(self.short_buffer) -
                                                   int(self.SMALL_CHUNK_UPDATE * self.bytes_per_second):]
             self.process_short_buffer()
 
-            print(len(self.short_buffer))
+        return self.speech_recognition_info
 
     def process_short_buffer(self):
         transcription = self.transcribe_sr()
-        print(f"Transcription: {transcription}")
+        self.speech_recognition_info["short_transcription"] = transcription
         if any(word in transcription for word in self.WAKE_WORDS):
+            self.speech_recognition_info["wake_word"] = True
             self.long_buffer.extend(self.short_buffer_save)
             self.listening_deep = True
 
         if transcription == "" and self.listening_deep:
+            self.speech_recognition_info["is_speaking"] = False
             self.listening_deep = False
             self.process_long_buffer()
             self.long_buffer = bytearray(b'')
 
     def process_long_buffer(self):
         transcription = self.transcribe_whisper()
-        print(f"Transcription WHISPER: {transcription}")
+        self.speech_recognition_info["long_transcription"] = transcription
 
     def transcribe_sr(self) -> str:
         data = np.frombuffer(self.short_buffer_save, dtype=np.float32)
@@ -85,7 +96,6 @@ class SpeechRecognitionController:
         result_bytes = byte_io.read()
         audio_data = sr.AudioData(result_bytes, self.SAMPLE_RATE, 2)
 
-        print("Transcribing...")
         try:
             return self.recognizer.recognize_google(audio_data=audio_data, language="en-US")
         except speech_recognition.UnknownValueError:
