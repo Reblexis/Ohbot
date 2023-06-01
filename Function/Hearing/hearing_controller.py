@@ -35,15 +35,13 @@ class HearingController:
                                   stream_callback=self.listen,
                                   input_device_index=7)
         self.stream.start_stream()
-        while True:
-            self.process()
 
     def listen(self, in_data, frame_count, time_info, flag):
         self.speech_recognition_pipeline.receive_chunk(in_data)
 
         return in_data, pyaudio.paContinue
 
-    def process(self):
+    def step(self):
         speech_recognition_info = self.speech_recognition_pipeline.process()
 
 

@@ -47,5 +47,8 @@ class VisionController:
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + buffer + b'\r\n')
 
-    def show_camera_feed(self):
+    def enable(self):
         self.show_camera = True
+
+    def disable(self):
+        self.show_camera = False

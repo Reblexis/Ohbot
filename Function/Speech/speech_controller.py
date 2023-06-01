@@ -10,6 +10,9 @@ class SpeechController:
     def __init__(self):
         self.talking_pipeline = talking.TalkingController()
 
+    def step(self):
+        pass
+
 
 def concatenate(a, b):
     if a is None:
