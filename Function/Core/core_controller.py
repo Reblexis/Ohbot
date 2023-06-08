@@ -7,6 +7,7 @@ from Function.physical_controller import PhysicalController
 
 class CoreController:
     def __init__(self):
+        print("INIT CORE CONTROLLER")
         self.behaviour_controller = BehaviourController()
         self.hearing_controller = HearingController()
         # self.speech_controller = SpeechController()
