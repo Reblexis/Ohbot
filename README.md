@@ -1,7 +1,7 @@
 ## Thoughtful Artificially intelligent and Responsive System (TARS)
 
 The goal of this project is to develop a human-like agent using artificial intelligence. The agent will be able to communicate with the user via speech just like a normal human, solve problems and much more.
-You can read more details about the vision for this project (here)[https://drive.google.com/file/d/1nj4l2pW25RxiD6ey25Xw8ZXcX6VLS_xh/view?usp=drive_link].
+You can read more details about the vision for this project [here](https://drive.google.com/file/d/1nj4l2pW25RxiD6ey25Xw8ZXcX6VLS_xh/view?usp=drive_link).
 
 ## Installation
 1. Clone the repository.
