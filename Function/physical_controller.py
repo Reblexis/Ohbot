@@ -76,3 +76,6 @@ class PhysicalController:
         ohbot.move(ohbot.HEADTURN, horizontal)
         ohbot.move(ohbot.HEADNOD, vertical)
         print("Head moved!")
+
+    def step(self):
+        pass
