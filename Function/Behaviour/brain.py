@@ -1,7 +1,8 @@
 import os
 import openai
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+api_key = open("/home/cihalvi/src/Ohbot/openai_api_key.txt", "r").read()
+openai.api_key = api_key
 
 response = openai.ChatCompletion.create(
   model="gpt-3.5-turbo",
