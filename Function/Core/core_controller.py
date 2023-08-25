@@ -10,14 +10,15 @@ class CoreController:
         print("INIT CORE CONTROLLER")
         self.behaviour_controller = BehaviourController()
         self.hearing_controller = HearingController()
-        # self.speech_controller = SpeechController()
         self.vision_controller = VisionController()
+        self.behaviour_controller = BehaviourController()
+        self.speech_controller = SpeechController()
         self.physical_controller = PhysicalController()
 
     def run(self):
         while True:
-            self.behaviour_controller.step()
             self.hearing_controller.step()
-            # self.speech_controller.process()
             self.vision_controller.step()
+            self.behaviour_controller.step()
+            self.speech_controller.step()
             self.physical_controller.step()
