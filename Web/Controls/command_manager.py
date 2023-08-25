@@ -112,7 +112,7 @@ class CommandManager:
             return False
         if command_name in self.commands:
             print(f"Executing command {command_name} with args {args}")
-            self.commands[command_name](args)
+            self.commands[command_name][0](args)
             return True
         else:
             return False

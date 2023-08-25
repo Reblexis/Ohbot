@@ -52,3 +52,6 @@ class VisionController:
 
     def disable(self):
         self.show_camera = False
+
+    def step(self):
+        pass

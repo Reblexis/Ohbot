@@ -8,7 +8,7 @@ from Function.physical_controller import PhysicalController
 class CoreController:
     def __init__(self):
         self.hearing_controller = HearingController()
-        # self.vision_controller = VisionController()
+        self.vision_controller = VisionController()
         self.behaviour_controller = BehaviourController()
         self.speech_controller = SpeechController()
         self.physical_controller = PhysicalController()
@@ -16,7 +16,7 @@ class CoreController:
     def run(self):
         while True:
             self.hearing_controller.step()
-            # self.vision_controller.step()
+            self.vision_controller.step()
             self.behaviour_controller.step()
             self.speech_controller.step()
             self.physical_controller.step()
