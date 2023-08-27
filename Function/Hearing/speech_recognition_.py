@@ -20,7 +20,7 @@ class SpeechRecognitionController:
      some period of time)
     4. Transcribe the collected chunks using whisper
     """
-    WAKE_WORDS = ["tars", "stars", "cars", "bars"]
+    WAKE_WORDS = ["assistant"]
 
     SAMPLE_RATE = 16000
 
@@ -59,7 +59,7 @@ class SpeechRecognitionController:
         self.short_buffer.extend(chunk)
 
     def process(self) -> dict:
-        self.speech_recognition_info: dict = {}
+        self.speech_recognition_info: dict = self.SPEECH_RECOGNITION_INFO_BASE.copy()
         if len(self.short_buffer) >= self.SMALL_CHUNK_SIZE * self.bytes_per_second:
             self.short_buffer_save = self.short_buffer.copy()
             self.short_buffer = self.short_buffer[len(self.short_buffer) -

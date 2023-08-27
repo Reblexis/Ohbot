@@ -3,6 +3,7 @@ import serial.tools.list_ports
 
 from Function.helpful_functions import checkPort, secure_val, denormalize
 from ohbot import ohbot
+
 HEAD_NOD = 0
 HEAD_TURN = 1
 EYE_TURN = 2
@@ -22,6 +23,9 @@ class PhysicalController:
         self.port = None
         self.ser = None
         print("Physical controller initialized!")
+
+    def step(self):
+        pass
 
     def search_connection(self) -> bool:
         ports = serial.tools.list_ports.comports()
@@ -76,3 +80,6 @@ class PhysicalController:
         ohbot.move(ohbot.HEADTURN, horizontal)
         ohbot.move(ohbot.HEADNOD, vertical)
         print("Head moved!")
+
+    def step(self):
+        pass

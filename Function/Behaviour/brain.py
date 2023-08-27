@@ -94,7 +94,8 @@ class GPT3BrainController(BrainController):
         self.messages.append({"role": "user", "content": spoken_content})
         return self.get_response()
 
-
+      
+      
 if __name__ == "__main__":
     command_manager = CommandManager(None)
     bc = GPT3BrainController(command_manager)

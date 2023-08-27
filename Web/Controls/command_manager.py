@@ -193,6 +193,7 @@ class CommandManager:
         command_name = split_command[0]
         arg_list = split_command[1:]
         if command_name in self.commands:
+            print(f"Executing command {command_name} with args {args}")
             parser = argparse.ArgumentParser(description=f"{command_name} command parser")
             for parameter in self.commands[command_name][1]().parameters:
                 if isinstance(parameter, ContinuousParameter):
