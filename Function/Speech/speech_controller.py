@@ -10,6 +10,9 @@ class SpeechController:
     def __init__(self):
         self.talking_pipeline = talking.TalkingController()
 
+    def process(self, text: str):
+        self.talking_pipeline.say(text)
+
     def step(self):
         pass
 

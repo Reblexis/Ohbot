@@ -10,9 +10,8 @@ class CoreController:
         print("INIT CORE CONTROLLER")
         self.behaviour_controller = BehaviourController()
         self.hearing_controller = HearingController()
-        self.vision_controller = VisionController()
-        self.behaviour_controller = BehaviourController()
         self.speech_controller = SpeechController()
+        self.vision_controller = VisionController()
         self.physical_controller = PhysicalController()
 
     def run(self):
