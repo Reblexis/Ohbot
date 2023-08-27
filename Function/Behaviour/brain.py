@@ -29,6 +29,8 @@ class GPT3BrainController(BrainController):
                        "If you think that doing nothing is the best response, respond with pass and nothing will happen." \
                        "You can only respond with commands and nothing else. Your answer can be as short as you want." \
                        "This is VERY IMPORTANT you can only respond with the commands."
+    SAVED_MESSAGES_COUNT = 10
+    INITIAL_MESSAGE_COUNT = 5
 
     def __init__(self, command_manager: CommandManager):
         super().__init__(command_manager)
@@ -46,7 +48,18 @@ class GPT3BrainController(BrainController):
             {"role": "assistant", "content": "say --text=\"Hello. I'm doing fine thank you\""},
         ]
 
+    def delete_old_messages(self):
+        if len(self.messages) <= self.SAVED_MESSAGES_COUNT + self.INITIAL_MESSAGE_COUNT:
+            return
+
+        messages_backup = self.messages.copy()
+        self.initialize_messages()
+        for message in messages_backup[-self.SAVED_MESSAGES_COUNT:]:
+            self.messages.append(message)
+
     def get_response(self, recursion_counter: int = 0) -> dict[str, str] | dict[str, str | Any]:
+        self.delete_old_messages()
+
         if recursion_counter > 3:
             return {"response": "This is a scripted message. I don't know what to do."}
 
