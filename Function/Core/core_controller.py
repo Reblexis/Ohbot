@@ -9,7 +9,7 @@ class CoreController:
     def __init__(self):
         self.behaviour_controller = BehaviourController()
         self.hearing_controller = HearingController()
-        # self.speech_controller = SpeechController()
+        self.speech_controller = SpeechController()
         self.vision_controller = VisionController()
         self.physical_controller = PhysicalController()
 

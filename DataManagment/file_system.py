@@ -81,7 +81,7 @@ def load_file(file_path: Path):
 
 def ensure_open_ai_api():
     if not os.environ.get("OPENAI_API_KEY"):
-        with open("openai_api_key.txt") as file:
+        with open("../Data/Other/openai_api_key.txt") as file:
             os.environ["OPENAI_API_KEY"] = file.read().strip()
     openai.api_key = os.environ["OPENAI_API_KEY"]
 

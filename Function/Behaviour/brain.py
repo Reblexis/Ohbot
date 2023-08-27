@@ -1,23 +1,81 @@
 import os
+from typing import Dict, Any, List, Generator
+
 import openai
+from abc import ABC, abstractmethod
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+from openai.openai_object import OpenAIObject
 
-response = openai.ChatCompletion.create(
-  model="gpt-3.5-turbo",
-  messages=[
-        {"role": "system", "content": "You are controlling a robot. Available commands are: `say [text]`, `search [query]`, `set [object] [state]`."
-                                      " You can only respond with these commands and no other text. Whenever you want to to say something, just type `say [text]`. If I ask you to google something, just type `search [query]`. "
-                                      "If I ask you to set an object on or off, just type `set [object] [state]`."},
-        {"role": "user", "content": "Hello, how are you?"},
-        {"role": "assistant", "content": "`say 'Hi, I'm great. And you?'` "},
-        {"role": "user", "content": "I'm good, thanks."},
-        {
-            "content": "`say 'Glad to hear that. How can I assist you today?'`",
-            "role": "assistant"
-        },
-        {"role": "user", "content": "I'd like to turn on the lights in the living room."},
+from constants import *
+from Web.Controls.command_manager import CommandManager
+
+
+class BrainController(ABC):
+    def __init__(self, command_manager: CommandManager):
+        self.command_manager = command_manager
+        pass
+
+    @abstractmethod
+    def process(self, query: dict) -> dict:
+        pass
+
+
+class GPT3BrainController(BrainController):
+    API_FILE_PATH = OTHER_FOLDER / "openai_api_key.txt"
+
+    BEHAVIOUR_PROMPT = "You are controlling a robot. Available commands are: `say`, `set`, `help`, `pass`." \
+                       "If you want to use a command, you should first learn more about it by typing `help [command]`. After this you get response" \
+                       "from the system describing the command and its usage. You can then determine if you want to use it or find one that suits you better." \
+                       "If you think that doing nothing is the best response, respond with pass and nothing will happen." \
+                       "You can only respond with commands and nothing else. Your answer can be as short as you want." \
+                       "This is VERY IMPORTANT you can only respond with the commands."
+
+    messages = [
+        {"role": "system", "content": BEHAVIOUR_PROMPT},
+        {"role": "user", "content": "Hello how are you?"},
+        {"role": "assistant", "content": "help say"},
+        {"role": "system",
+         "content": "Command: say\nDescription: Makes the robot say something.\nParameters: text (The text to say.)\nExample: say 'Hello!'"},
+        {"role": "assistant", "content": "say 'Hello. I'm doing fine thank you. How are you?'"},
     ]
-)
 
-print(response)
+    def __init__(self, command_manager: CommandManager):
+        super().__init__(command_manager)
+        openai.api_key = open(self.API_FILE_PATH, "r").read()
+
+    def get_response(self, recursion_counter: int = 0) -> dict[str, str] | dict[str, str | Any]:
+        print(self.messages)
+        if recursion_counter > 3:
+            return {"response": "This is a scripted message. I don't know what to do."}
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=self.messages
+        )
+        response_content = response.choices[0].message.content
+        self.messages.append({"role": "assistant", "content": response_content})
+        command = response_content.split(" ")[0]
+
+        if command == "pass":
+            return {"response": "pass"}
+
+        if command == "help":
+            command = response_content.split(" ")[1]
+            system_response = self.command_manager.help({"command": command})
+            self.messages.append({"role": "system", "content": system_response})
+            return {"response": self.get_response(recursion_counter + 1)}
+
+        self.command_manager.execute_command(response_content)
+
+        return {"response": response}
+
+    def process(self, query: dict) -> dict:
+        spoken_content: str = query["spoken_content"]
+        self.messages.append({"role": "user", "content": spoken_content})
+        return self.get_response()
+
+
+if __name__ == "__main__":
+    command_manager = CommandManager(None)
+    bc = GPT3BrainController(command_manager)
+    print(bc.process({"spoken_content": "Please tell me the whole english alphabet from a to z."}))
