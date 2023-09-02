@@ -213,7 +213,7 @@ class CommandManager:
             elif args["state"] == "off" and self.core_controller.hearing_controller.listening:
                 self.core_controller.hearing_controller.disable()
 
-        return "Successfully toggled!"
+        return "Successfully toggled! You may have to reload the page to see the changes."
 
     def say(self, args: dict) -> str:
         text = args["text"]

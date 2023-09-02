@@ -5,6 +5,7 @@ from pydub.playback import play
 
 from constants import *
 
+
 class TalkingController:
     """
     Talking is currently working via eleven labs API. Therefore, there is a network connection required.
@@ -43,7 +44,10 @@ class TalkingController:
         Returns:
             bool: True if the request was successful, False otherwise
         """
-        edited_text = "...."+text
+        if text == "":
+            return True
+
+        edited_text = text
         tts_url = (
             f"https://api.elevenlabs.io/v1/text-to-speech/{self.VOICE_ID}"
         )
@@ -62,4 +66,3 @@ class TalkingController:
             print("Request failed with status code:", response.status_code)
             print("Response content:", response.content)
             return False
-

@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 import openai
@@ -70,9 +71,7 @@ class GPT3BrainController(BrainController):
         if response_content is None:
             response_content = ""
 
-        print(response_message)
-
-        self.messages.append(response_message)
+        self.messages.append({"role": "assistant", "content": response_content})
 
         if response_message.get("function_call"):
             function_feedback: str = self.command_manager.execute_command_gpt3(response_message.get("function_call"))
@@ -96,7 +95,9 @@ class GPT3BrainController(BrainController):
         spoken_content: str = query["spoken_content"]
         self.messages.append({"role": "user", "content": spoken_content})
         responses: list = self.get_response()
+        print("MESSAGES:")
         print(self.messages)
+        print("------------------")
 
         return responses
 
