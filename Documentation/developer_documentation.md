@@ -11,7 +11,7 @@ The project is split into 5 main parts (it uses camel case for folders and snake
 - `Training` - scripts for training AI models used in the project
 
 ### Web app
-The app currently gives you access to a console, via which you can interact with the robot [command_manager.py](../Web/Controls/command_manager.py). It uses the flask library at the moment.
+The app currently gives you access to a console, via which you can interact with the robot [command_manager.py](../Function/Core/command_manager.py). It uses the flask library at the moment.
 
 ### DataManagement
 

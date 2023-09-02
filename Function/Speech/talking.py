@@ -3,6 +3,7 @@ import os
 from pydub import AudioSegment
 from pydub.playback import play
 
+from constants import *
 
 class TalkingController:
     """
@@ -22,7 +23,7 @@ class TalkingController:
         "Sam": "yoZ06aMxZJJ28mfd3POQ",
     }
     VOICE_ID = VOICE_OPTIONS["Adam"]
-    SPEECH_FILE = "tts.wav"
+    SPEECH_FILE = OTHER_FOLDER / "tts.wav"
 
     def __init__(self):
         self._headers = {
@@ -42,6 +43,7 @@ class TalkingController:
         Returns:
             bool: True if the request was successful, False otherwise
         """
+        edited_text = "...."+text
         tts_url = (
             f"https://api.elevenlabs.io/v1/text-to-speech/{self.VOICE_ID}"
         )
@@ -53,7 +55,7 @@ class TalkingController:
                 f.write(audio_data)
             speech = AudioSegment.from_mp3(self.SPEECH_FILE)
             play(speech)
-            os.remove(self.SPEECH_FILE)
+            # os.remove(self.SPEECH_FILE)
             return True
 
         else:
