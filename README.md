@@ -13,6 +13,7 @@ You can read more details about the vision for this project [here](Documentation
 ## Setup
 1. You need to have a camera connected to your computer.
 2. You need to have a microphone connected to your computer.
+3. You may also want to use headphones or speakers to hear the robot's speech.
 3. You may have to have a robot connected to your computer (see [here](https://www.ohbot.co.uk/store/c1/buy-ohbot)). If you don't the software will still run, you just won't be able to control the robot.
 4. Many modules require OpenAI API key to function. You can get one [here](https://beta.openai.com/). This is required.
 
