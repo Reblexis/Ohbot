@@ -1,0 +1,1 @@
+{"description": "", "dataset_path": "DigiFace", "evaluation_set": "samples_17324809.csv", "epochs": 100, "batch_size": 64, "learning_rate": 0.001, "early_stopping_patience": 5, "random_seed": 13532, "input_dimensions": [160, 160], "features_dim": 128, "grayscale": false}
