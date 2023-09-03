@@ -16,6 +16,7 @@ class VisionController:
     # Two different files so that another process doesn't read the file while it's being rewritten
     LAST_FRAME_WRITE_PATH = OTHER_FOLDER / "last_frame_write.jpg"
     LAST_FRAME_READ_PATH = OTHER_FOLDER / "last_frame_read.jpg"
+    NO_CAMERA_PLACEHOLDER = OTHER_FOLDER / "no_camera.jpg"
 
     def __init__(self):
         print("Initializing vision controller...")
@@ -34,7 +35,10 @@ class VisionController:
         self.show_camera = False
         print("Vision controller initialized!")
 
-    def get_frame(self, face_detections: bool = False, face_recognition: bool = False) -> np.ndarray:
+    def get_frame(self, face_detections: bool = True, face_recognition: bool = False) -> np.ndarray:
+        if not self.show_camera:
+            return cv2.imread(str(self.NO_CAMERA_PLACEHOLDER))
+
         success, image = self.camera.read()
         assert success, "Failed to get frame from camera!"
         visualized_predictions = image.copy()
@@ -52,7 +56,7 @@ class VisionController:
         return buffer.tobytes()
 
     def gen_frames(self):
-        while self.show_camera:
+        while True:
             numpy_buffer = self.get_frame()
             buffer = self.numpy_to_bytes(numpy_buffer)
             yield (b'--frame\r\n'

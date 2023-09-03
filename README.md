@@ -10,6 +10,12 @@ You can read more details about the vision for this project [here](https://drive
 4. If you want to use the trained models you have to retrieve them using git lfs like this: `git lfs pull`.
 5. You can now run the software by running [main.py](main.py).
 
+## Setup
+1. You need to have a camera connected to your computer.
+2. You need to have a microphone connected to your computer.
+3. You may have to have a robot connected to your computer (see [here](https://www.ohbot.co.uk/store/c1/buy-ohbot)). If you don't the software will still run, you just won't be able to control the robot.
+4. Many modules require OpenAI API key to function. You can get one [here](https://beta.openai.com/). This is required.
+
 ## Training
 If you would like to replicate the training of the models, you can download the datasets [here](https://drive.google.com/file/d/1nj4l2pW25RxiD6ey25Xw8ZXcX6VLS_xh/view?usp=sharing).
 You can run the training of the models by running `Training/Module/Aspect/trainer.py`. For example, if you would like to train the Face Recognition model,

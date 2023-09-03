@@ -11,24 +11,28 @@
     <body>
         <h1 class="headline">Tars controls</h1>
         <body>
-             <form method="POST">
-                <label for="command_input">Command</label>
-                <input type="text" name="command_input" id="command_input"/>
-                <button type="submit" name="trigger" class="submit_button" id="command_button" value="command">Send</button>
-            </form>
+            <div class="command_field">
+                <form method="POST">
+                    <label for="command_input">Command</label>
+                    <input type="text" name="command_input" id="command_input"/>
+                    <button type="submit" name="trigger" class="submit_button" id="command_button" value="command">Send</button>
+                </form>
+            </div>
+
 
             <div class="feedback_message">
+                <div class="feedback_message">
                 {% if success %}
-                    <p style="color: black;">{{ feedback_message }}</p>
+                    <pre class="pre-success">{{ feedback_message }}</pre>
                 {% else %}
-                    <p style="color: red;">{{ feedback_message }}</p>
+                    <pre class="pre-failure">{{ feedback_message }}</pre>
                 {% endif %}
             </div>
-            <div class="col-lg-8  offset-lg-2">
-                {% if show_camera_feed %}
-                    <h3 class="mt-5">Camera Feed</h3>
-                    <img src="{{ url_for('camera_feed') }}" width="100%">
-                {% endif %}
+
+            </div>
+            <div class="camera_feed">
+                <h3 class="camera_feed_text">Camera Feed</h3>
+                <img class="camera_feed_image" id="camera_feed_image" src="{{ url_for('camera_feed') }}">
             </div>
         </body>
     </body>

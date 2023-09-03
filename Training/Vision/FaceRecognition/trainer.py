@@ -3,7 +3,7 @@ import random
 
 from Training.training_constants import *
 from Training.Vision.FaceRecognition.face_recognition_hyperparameters import *
-from DataManagment.file_system import ensure_dir, save_to_file, load_file
+from DataManagement.file_system import ensure_dir, save_to_file, load_file
 from Training.DataPipeline.data_loader import get_train_test_sets
 from Training.Vision.FaceRecognition.Models.siamese_network import SiameseNetwork
 from Training.Vision.FaceRecognition.Models.inception_resnet import InceptionResnetNetwork

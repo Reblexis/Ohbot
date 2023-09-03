@@ -7,7 +7,7 @@ import openai
 import os
 
 from constants import *
-from DataManagment import file_system as fs
+from DataManagement import file_system as fs
 
 
 class SpeechRecognitionController:

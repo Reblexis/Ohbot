@@ -1,5 +1,5 @@
 from Training.training_constants import *
-from DataManagment.file_system import clear_folder_content, ensure_dir, clear_folder_content
+from DataManagement.file_system import clear_folder_content, ensure_dir, clear_folder_content
 
 import os
 import shutil

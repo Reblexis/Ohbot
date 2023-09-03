@@ -44,11 +44,49 @@ body, .text {
     align-items: center;
 }
 
+.command_field{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
 .feedback_message{
     text-align: center;
-    color: red;
     font-size: 20px;
     font-weight: bold;
+}
+
+.pre-success {
+    color: black;
+}
+
+.pre-failure {
+    color: red;
+}
+
+.camera_feed{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+}
+
+.camera_feed_text{
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.camera_feed_image{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 640px;
+    height: 360px;
+    border: 5px solid black;
+    border-radius: 10px;
 }
 
 /*# sourceMappingURL=style.css.map */

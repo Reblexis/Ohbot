@@ -1,6 +1,6 @@
 from Training.Vision.FaceRecognition.face_recognition_constants import *
 from Training.training_constants import *
-from DataManagment.file_system import load_file, save_to_file
+from DataManagement.file_system import load_file, save_to_file
 
 import pandas as pd
 import random

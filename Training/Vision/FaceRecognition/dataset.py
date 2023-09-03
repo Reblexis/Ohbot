@@ -1,6 +1,6 @@
 from Training.Vision.FaceRecognition.face_recognition_hyperparameters import *
 from Training.training_constants import *
-from DataManagment.file_system import load_file, save_to_file
+from DataManagement.file_system import load_file, save_to_file
 from Training.Extractors.index_extractor import IndexExtractor
 
 import math

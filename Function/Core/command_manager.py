@@ -4,6 +4,7 @@ import shlex
 import json
 
 from Function.Core.core_controller import CoreController
+from Function.Core.command_parameters import *
 
 RESET_COMMAND_NAME = "reset"
 ROTATE_COMMAND_NAME = "rotate"
@@ -13,59 +14,11 @@ HELP_COMMAND_NAME = "help"
 
 DEFAULT_ARGUMENTS = {
     RESET_COMMAND_NAME: {"aspect": "all"},
-    ROTATE_COMMAND_NAME: {"obj": "head", "horizontal": 0.5, "vertical": 0.5},  # Slight rotation to the right and up
+    ROTATE_COMMAND_NAME: {"obj": "head", "horizontal": 0.5, "vertical": 0.5},  # Slight rotation to the right and down
     TOGGLE_COMMAND_NAME: {"obj": "camera", "state": "on"},
     SAY_COMMAND_NAME: {"text": "The text that the agent will say"},
-    HELP_COMMAND_NAME: {"command": "command_you_want_to_know_more_about"}
+    HELP_COMMAND_NAME: {"command": "all"}
 }
-
-
-class Parameter:
-    def __init__(self, name: str, description: str):
-        self.name = name
-        self.description = description
-
-
-class ContinuousParameter(Parameter):
-
-    def __init__(self, name: str, description: str, minimum: float, maximum: float, default: float):
-        super().__init__(name, description)
-
-        self.min = minimum
-        self.max = maximum
-        self.default = default
-        assert self.min <= self.default <= self.max
-
-    def __str__(self):
-        answer: str = f"Name: '{self.name}'. Type: Continuous. Description: '{self.description}'. Minimum: {self.min}. Maximum: {self.max}. Default: {self.default}"
-
-
-class DiscreteParameter(Parameter):
-    def __init__(self, name: str, description: str, options: list, default: str):
-        super().__init__(name, description)
-
-        self.options = options
-        self.default = default
-        assert self.default in self.options
-
-    def __str__(self):
-        answer: str = f"Name: '{self.name}'. Type: Discrete. Description: '{self.description}'. Options: {self.options}. Default: '{self.default}'"
-        return answer
-
-
-class TextParameter(Parameter):
-    """
-    A parameter that accepts text as input.
-    """
-
-    def __init__(self, name: str, description: str, default: str):
-        super().__init__(name, description)
-
-        self.default = default
-
-    def __str__(self):
-        answer: str = f"Name: '{self.name}'. Type: Text. Description: '{self.description}'. Default: '{self.default}'"
-        return answer
 
 
 class Command:
@@ -97,11 +50,11 @@ class ResetCommand(Command):
 class RotateCommand(Command):
     def __init__(self):
         super().__init__("rotate", "Rotates the head of the robot.",
-                         [ContinuousParameter("horizontal", "Horizontal angle to rotate to. Ranges from -1 (left)"
-                                                            " to 1 (right).", -1, 1,
+                         [ContinuousParameter("horizontal", "Horizontal angle to rotate to. Ranges from -1 (right)"
+                                                            " to 1 (left).", -1, 1,
                                               DEFAULT_ARGUMENTS[ROTATE_COMMAND_NAME]["horizontal"]),
-                          ContinuousParameter("vertical", "Vertical angle to rotate to. Ranges from -1 (down)"
-                                                          " to 1 (up).", -1, 1,
+                          ContinuousParameter("vertical", "Vertical angle to rotate to. Ranges from -1 (up)"
+                                                          " to 1 (down).", -1, 1,
                                               DEFAULT_ARGUMENTS[ROTATE_COMMAND_NAME]["vertical"])])
 
 
@@ -123,10 +76,13 @@ class SayCommand(Command):
 
 class HelpCommand(Command):
     def __init__(self):
+        options = ["all"]
+        for command_name in DEFAULT_ARGUMENTS.keys():
+            options.append(command_name)
         super().__init__("help", "Gives information about a certain command and explains how to use it.",
-                         [TextParameter("command", "The command to get help about.",
-                                        DEFAULT_ARGUMENTS[HELP_COMMAND_NAME][
-                                            "command"])])
+                         [DiscreteParameter("command", "The command to get help about.", options,
+                                            DEFAULT_ARGUMENTS[HELP_COMMAND_NAME][
+                                                "command"])])
 
 
 class CommandManager:
@@ -140,42 +96,6 @@ class CommandManager:
 
         self.parser = argparse.ArgumentParser(description='Process agent commands.')
         self.initialize_command_parser()
-
-    def get_commands_gpt3(self) -> list:
-        functions = []
-        for cmd_name, (func, cmd_class) in self.commands.items():
-            parameters = {"type": "object", "properties": {}, "required": []}
-            for parameter in cmd_class().parameters:
-                if isinstance(parameter, ContinuousParameter):
-                    parameters["properties"][parameter.name] = {"type": "number",
-                                                                "description": parameter.description}
-                    parameters["required"].append(parameter.name)
-                elif isinstance(parameter, DiscreteParameter):
-                    parameters["properties"][parameter.name] = {"type": "string",
-                                                                "description": parameter.description,
-                                                                "enum": parameter.options}
-                    parameters["required"].append(parameter.name)
-                elif isinstance(parameter, TextParameter):
-                    parameters["properties"][parameter.name] = {"type": "string",
-                                                                "description": parameter.description}
-                    parameters["required"].append(parameter.name)
-
-            functions.append({
-                "name": cmd_name,
-                "description": cmd_class().description,
-                "parameters": parameters
-            })
-        return functions
-
-    def execute_command_gpt3(self, command_info: dict) -> str:
-        print(f"Executing command {command_info}")
-
-        command_name: str = command_info["name"]
-        command_args: dict = json.loads(command_info["arguments"])
-        feedback_message: str = self.commands[command_name][0](command_args)
-        if feedback_message is None:
-            feedback_message = "None"
-        return feedback_message
 
     def initialize_command_parser(self):
         subparsers = self.parser.add_subparsers(dest='command_name')
@@ -228,7 +148,9 @@ class CommandManager:
         command = args["command"]
 
         if command == "all":
-            return "Available commands: " + ", ".join(self.commands.keys())
+            message = "Available commands are " + ", ".join(self.commands.keys()) + ".\n"
+            message += "To get help about a certain command, type 'help --command=command_name'."
+            return message
 
         if command in self.commands:
             return str(self.commands[command][1]())

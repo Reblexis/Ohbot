@@ -2,6 +2,10 @@ from Function.Behaviour.brain import GPT3BrainController
 
 
 class BehaviourController:
+    """
+    This class is the abstract class representing the behaviour of the agent.
+    At the moment it only contains the interaction with the brain.
+    """
     def __init__(self, command_manager):
         self.brain_controller = GPT3BrainController(command_manager)
 

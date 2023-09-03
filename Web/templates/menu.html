@@ -16,7 +16,10 @@
             </form>
             <div class="feedback_message">
                 {% if error %}
-                    <p id="error_message">Error: {{ error }}</p>
+                    <pre class="pre-failure">{{ error }}</pre>
+                    <form method="POST">
+                        <button name="trigger" class="submit_button" type="submit" id="connect_force_button" value="connect_force">Connect anyway (experimental)</button>
+                    </form>
                 {% endif %}
             </div>
         </body>

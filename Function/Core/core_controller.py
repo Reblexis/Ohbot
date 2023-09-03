@@ -2,7 +2,7 @@ from Function.Behaviour.behaviour_controller import BehaviourController
 from Function.Hearing.hearing_controller import HearingController
 from Function.Speech.speech_controller import SpeechController
 from Function.Vision.vision_controller import VisionController
-from Function.physical_controller import PhysicalController
+from Function.Physical.physical_controller import PhysicalController
 
 
 class CoreController:

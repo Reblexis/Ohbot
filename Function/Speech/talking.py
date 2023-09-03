@@ -11,7 +11,7 @@ class TalkingController:
     Talking is currently working via eleven labs API. Therefore, there is a network connection required.
     """
 
-    API_KEY = "aade8d9ee7f3c2bc0e8fbf286c2c78c0"
+    API_KEY = "b8e30e3ad53288a05e9f5283b67ef6c5"
     VOICE_OPTIONS = {
         "Rachel": "21m00Tcm4TlvDq8ikWAM",
         "Domi": "AZnzlk1XvdvUeBnXmlld",

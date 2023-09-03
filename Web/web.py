@@ -8,6 +8,7 @@ from Function.Core.core_controller import CoreController
 
 class MenuPage(MethodView):
     CONNECT_TRIGGER = "connect"
+    FORCE_CONNECT_TRIGGER = "connect_force"
 
     def __init__(self, core_controller: CoreController = None):
         self.core_controller = core_controller
@@ -19,13 +20,15 @@ class MenuPage(MethodView):
         trigger = request.form.get('trigger')
         if trigger == self.CONNECT_TRIGGER:
             return self.connect()
+        elif trigger == self.FORCE_CONNECT_TRIGGER:
+            return self.connect(force=True)
 
         print(f"Unknown trigger value: {trigger}", file=sys.stderr)
         return self.get()
 
-    def connect(self):
-        if self.core_controller.physical_controller.search_connection():
-            print("Found connection!")
+    def connect(self, force: bool = False):
+        if self.core_controller.physical_controller.search_connection() or force:
+            print("Found connection!") if not force else print("Forced connection!")
             return redirect(url_for('main'))
         else:
             print("Could NOT find connection!")
@@ -53,7 +56,7 @@ class MainPage(MethodView):
     def command(self):
         command = request.form.get(self.COMMAND_INPUT)
         success, feedback = self.command_manager.execute_command(command)
-        return render_template('main.html', success=success, feedback=feedback,
+        return render_template('main.html', success=success, feedback_message=feedback,
                                show_camera_feed=self.core_controller.vision_controller.show_camera)
 
 

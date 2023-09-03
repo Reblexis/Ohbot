@@ -4,8 +4,8 @@ import shutil
 import pandas as pd
 
 from Training.training_constants import *
-from DataManagment.file_system import ensure_dir, clear_folder_content, save_to_file, load_file
-from DataManagment.image_system import convert_to_gray
+from DataManagement.file_system import ensure_dir, clear_folder_content, save_to_file, load_file
+from DataManagement.image_system import convert_to_gray
 
 suffix = ".png"
 
