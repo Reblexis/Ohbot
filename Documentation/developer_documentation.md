@@ -74,7 +74,7 @@ The current structure looks something like this:
 - `Vision` - contains scripts for training vision models
 - `Vision/FaceRecognition` - contains scripts for training the face recognition model
 - `Vision/FaceRecognition/Models` - different architectures and model_manager which contains abstract class for all models (uses pytorch lightning)
-- `Vision/FaceRecognition/dataset.py` - contains the siamese dataset class, which is responsible for feeding the data into the siamese network
-- `Vision/FaceRecognition/trainer.py` - contains the trainer class, which is the main class which launches the training and analyzes its performance using wandb library
-- `Vision/FaceRecognition/constants.py` - contains constants used throughout the training process and dataset preparation
-- `Vision/FaceRecognition/hyperparameters.py` - contains hyperparameters used throughout the training process
+- [Vision/FaceRecognition/dataset.py](../Training/Vision/FaceRecognition/dataset.py) - contains the siamese dataset class, which is responsible for feeding the data into the siamese network
+- [Vision/FaceRecognition/trainer.py](../Training/Vision/FaceRecognition/trainer.py) - contains the trainer class, which is the main class which launches the training and analyzes its performance using wandb library
+- [Vision/FaceRecognition/face_recognition_constants.py](../Training/Vision/FaceRecognition/face_recognition_constants.py) - contains constants used throughout the training process and dataset preparation
+- [Vision/FaceRecognition/face_recognition_hyperparameters.py](../Training/Vision/FaceRecognition/face_recognition_hyperparameters.py) - contains hyperparameters used throughout the training process

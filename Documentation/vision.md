@@ -8,3 +8,17 @@ can be later combined with the brain itself.
 
 As the available technology improves and new research is done, I want to continuously update the robot,
 so it will eventually match state-of-the-art performance.
+
+## Short-term goals
+- [x] Implement simple brain using a language model
+- [x] Create base classes for the project
+- [x] Implement real-time speech recognition
+- [x] Implement speech synthesis
+- [ ] Use locally run language model as a brain
+- [ ] Implement long-term memory
+
+## Long-term goals (not achievable with current technology)
+- [ ] Run all aspects of the robot locally
+- [ ] Create more general vision, hearing and speech modules (f.x. data extraction from camera feed via transformers)
+- [ ] Achieve real-time learning
+- [ ] Create more complex brain (similar to the one of a human)
