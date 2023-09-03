@@ -4,7 +4,7 @@ from pathlib import Path
 DEVICE = "cuda"
 
 DATA_FOLDER = Path(__file__).parent / "Data"
-assert DATA_FOLDER.exists()
+ensure_dir(DATA_FOLDER)
 
 OTHER_FOLDER = DATA_FOLDER / "Other"
 
