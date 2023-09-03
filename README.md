@@ -7,7 +7,7 @@ You can read more details about the vision for this project [here](Documentation
 1. Clone the repository.
 2. Create your preferred virtual environment.
 3. Go to the repository folder and run `pip install -r requirements.txt` to install all the required packages.
-4. If you want to use the trained models you have to retrieve them using git lfs like this: `git lfs pull`.
+4. To use the trained models you have to retrieve them using git lfs like this: `git lfs pull`.
 5. You can now run the software by running [main.py](main.py).
 
 ## Setup
