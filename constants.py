@@ -1,8 +1,6 @@
 from collections import namedtuple
 from pathlib import Path
 
-from DataManagment.file_system import ensure_dir, save_to_file, load_file
-
 DEVICE = "cuda"
 
 DATA_FOLDER = Path(__file__).parent / "Data"
@@ -11,7 +9,7 @@ assert DATA_FOLDER.exists()
 OTHER_FOLDER = DATA_FOLDER / "Other"
 
 MODELS_FOLDER = DATA_FOLDER / "Models"
-ensure_dir(MODELS_FOLDER)
+MODELS_FOLDER.mkdir(parents=True, exist_ok=True)
 
 ADMIN_ID = "admin"
 UNKNOWN_ID = "unknown"

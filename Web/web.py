@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, Response
 from flask.views import MethodView
 import sys
 
-from Web.Controls.command_manager import CommandManager
+from Function.Core.command_manager import CommandManager
 from Function.Core.core_controller import CoreController
 
 
@@ -68,9 +68,10 @@ class CameraFeed(MethodView):
 
 
 class Web:
-    def __init__(self, core_controller: CoreController):
+    def __init__(self, command_manager: CommandManager, core_controller: CoreController):
+        self.command_manager = command_manager
         self.core_controller = core_controller
-        self.command_manager = CommandManager(self.core_controller)
+
         self.app = Flask(__name__)
         self.app.add_url_rule('/', view_func=MenuPage.as_view('menu', self.core_controller))
         self.app.add_url_rule('/main', view_func=MainPage.as_view('main', self.core_controller, self.command_manager))
@@ -81,5 +82,5 @@ class Web:
 
 
 if __name__ == '__main__':
-    web = Web(core_controller=CoreController())
+    web = Web()
     web.run()

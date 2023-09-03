@@ -10,6 +10,8 @@ from constants import *
 from DataManagment import file_system as fs
 from Function.Hearing import speech_recognition_
 
+SPEECH_RECOGNITION_INFO_NAME = "speech_recognition"
+
 
 class HearingController:
     LISTENING_RATE = 44100
@@ -23,6 +25,8 @@ class HearingController:
         self.last_buffer_length = 0
         self.p = pyaudio.PyAudio()
         self.to_process = None
+
+        self.find_available_device()
 
         self.stream = self.p.open(format=pyaudio.paFloat32,
                                   channels=1,
@@ -46,15 +50,15 @@ class HearingController:
         if not self.listening:
             return in_data, pyaudio.paContinue
 
-        print(self.listening)
         self.speech_recognition_pipeline.receive_chunk(in_data)
 
         return in_data, pyaudio.paContinue
 
-    def step(self):
-        speech_recognition_info = self.speech_recognition_pipeline.process()
+    def step(self) -> dict:
+        hearing_info = {}
         if self.listening:
-            print(speech_recognition_info)
+            hearing_info[SPEECH_RECOGNITION_INFO_NAME] = self.speech_recognition_pipeline.process()
+        return hearing_info
 
     def enable(self):
         print("Enabling hearing controller...")
@@ -67,5 +71,7 @@ class HearingController:
 if __name__ == "__main__":
     hc = HearingController()
     hc.enable()
-
-
+    while True:
+        hearing_info = hc.step()
+        if hearing_info[SPEECH_RECOGNITION_INFO_NAME]["is_speaking"] or hearing_info[SPEECH_RECOGNITION_INFO_NAME]["long_transcription"] != "":
+            print(hearing_info[SPEECH_RECOGNITION_INFO_NAME])

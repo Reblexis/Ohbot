@@ -1,17 +1,14 @@
-import os
-from typing import Dict, Any, List, Generator
+import json
+from typing import Any
 
 import openai
 from abc import ABC, abstractmethod
 
-from openai.openai_object import OpenAIObject
-
 from constants import *
-from Web.Controls.command_manager import CommandManager
 
 
 class BrainController(ABC):
-    def __init__(self, command_manager: CommandManager):
+    def __init__(self, command_manager):
         self.command_manager = command_manager
         pass
 
@@ -23,29 +20,29 @@ class BrainController(ABC):
 class GPT3BrainController(BrainController):
     API_FILE_PATH = OTHER_FOLDER / "openai_api_key.txt"
 
-    BEHAVIOUR_PROMPT = "You are controlling a robot. Available commands are: `say`, `toggle`, `help`, `pass`." \
-                       "If you want to use a command, you should first learn more about it by typing `help [command]`. After this you get response" \
-                       "from the system describing the command and its usage. You can then determine if you want to use it or find one that suits you better." \
-                       "If you think that doing nothing is the best response, respond with pass and nothing will happen." \
-                       "You can only respond with commands and nothing else. Your answer can be as short as you want." \
-                       "This is VERY IMPORTANT you can only respond with the commands."
+    BEHAVIOUR_PROMPT = ("You are controlling a robot. You are responding to a content recognized from user's speech. You can answer with keyword pass if "
+                        "you think that the robot should ignore the user's speech or if you have finished your response."
+                        " You have available commands which you can use that control the robot. Anything you say (excluding 'pass') will be said by the robot."
+                        "Remember you HAVE to use the keyword pass to finish your response.")
+
     SAVED_MESSAGES_COUNT = 10
     INITIAL_MESSAGE_COUNT = 5
 
-    def __init__(self, command_manager: CommandManager):
+    def __init__(self, command_manager):
         super().__init__(command_manager)
+        self.functions = None
         openai.api_key = open(self.API_FILE_PATH, "r").read()
         self.messages = []
+        self.functions = command_manager.get_commands_gpt3()
         self.initialize_messages()
 
     def initialize_messages(self):
         self.messages = [
             {"role": "system", "content": self.BEHAVIOUR_PROMPT},
-            {"role": "user", "content": "Hello how are you?"},
-            {"role": "assistant", "content": "help say"},
-            {"role": "system",
-             "content": command_manager.help({"command": "say"})},
-            {"role": "assistant", "content": "say --text=\"Hello. I'm doing fine thank you\""},
+            {"role": "user", "content": "Assistant. Hello how are you?"},
+            {"role": "assistant", "content": "I'm doing well thank you. Pass."},
+            {"role": "user", "content": "Assistant. Where"},
+            {"role": "assistant", "content": "Pass."},
         ]
 
     def delete_old_messages(self):
@@ -57,46 +54,55 @@ class GPT3BrainController(BrainController):
         for message in messages_backup[-self.SAVED_MESSAGES_COUNT:]:
             self.messages.append(message)
 
-    def get_response(self, recursion_counter: int = 0) -> dict[str, str] | dict[str, str | Any]:
+    def get_response(self, recursion_counter: int = 0) -> list:
         self.delete_old_messages()
 
         if recursion_counter > 3:
-            return {"response": "This is a scripted message. I don't know what to do."}
+            return [{"content": "This is a scripted message. I don't know what to do."}]
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=self.messages
+            messages=self.messages,
+            functions=self.functions,
+            function_call='auto'
         )
-        response_content = response.choices[0].message.content
+        response_message = response.choices[0].message
+        response_content = response_message.content
+        if response_content is None:
+            response_content = ""
+
         self.messages.append({"role": "assistant", "content": response_content})
-        command = response_content.split(" ")[0]
 
-        print(self.messages)
+        if response_message.get("function_call"):
+            function_feedback: str = self.command_manager.execute_command_gpt3(response_message.get("function_call"))
+            self.messages.append({"role": "function", "name": response_message["function_call"]["name"],
+                                  "content": function_feedback})
 
-        if command == "pass":
-            return {"response": "pass"}
+        self.command_manager.say({"text": response_content.replace("Pass", "").replace("pass", "").strip()})
 
-        if command == "help":
-            command = response_content.split(" ")[1]
-            system_response = self.command_manager.help({"command": command})
-            self.messages.append({"role": "system", "content": system_response})
-            return {"response": self.get_response(recursion_counter + 1)}
+        assistant_responses = [response_message]
 
-        is_correct, status_message = self.command_manager.execute_command(response_content)
-        if not is_correct:
-            self.messages.append({"role": "system", "content": status_message})
-            return {"response": self.get_response(recursion_counter + 1)}
+        if "pass" in response_content or "Pass" in response_content:
+            return assistant_responses
 
-        return {"response": response}
+        assistant_responses.extend(self.get_response(recursion_counter + 1))
+        return assistant_responses
 
-    def process(self, query: dict) -> dict:
+    def process(self, query: dict) -> list:
+        if "spoken_content" not in query:
+            return [{"content": "pass"}]
+
         spoken_content: str = query["spoken_content"]
         self.messages.append({"role": "user", "content": spoken_content})
-        return self.get_response()
+        responses: list = self.get_response()
+        print("MESSAGES:")
+        print(self.messages)
+        print("------------------")
 
-      
-      
+        return responses
+
+
 if __name__ == "__main__":
     command_manager = CommandManager(None)
     bc = GPT3BrainController(command_manager)
-    print(bc.process({"spoken_content": "Please tell me the whole english alphabet from a to z."}))
+    print(bc.process({"spoken_content": "Please turn on the camera"}))
