@@ -14,6 +14,8 @@ so it will eventually match state-of-the-art performance.
 - [x] Create base classes for the project
 - [x] Implement real-time speech recognition
 - [x] Implement speech synthesis
+- [ ] Improve processing speed
+- [ ] Add more parallelization
 - [ ] Use locally run language model as a brain
 - [ ] Implement long-term memory
 
