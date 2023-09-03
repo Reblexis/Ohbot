@@ -6,7 +6,7 @@ from DataManagment.file_system import ensure_dir, save_to_file, load_file
 DEVICE = "cuda"
 
 DATA_FOLDER = Path(__file__).parent / "Data"
-assert DATA_FOLDER.exists()
+ensure_dir(DATA_FOLDER)
 
 OTHER_FOLDER = DATA_FOLDER / "Other"
 
