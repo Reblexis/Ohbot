@@ -7,7 +7,7 @@ It is also possible to process audio and visual input and extract valuable infor
 can be later combined with the brain itself.
 
 As the available technology improves and new research is done, I want to continuously update the robot,
-so it will eventually match state-of-the-art performance.
+so it could eventually match state-of-the-art performance.
 
 ## Short-term goals 
 These goals should be achievable with current technology.
