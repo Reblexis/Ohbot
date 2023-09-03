@@ -82,6 +82,11 @@ def load_file(file_path: Path):
 
 def ensure_open_ai_api():
     if not os.environ.get("OPENAI_API_KEY"):
+        if not os.path.exists(OTHER_FOLDER / "openai_api_key.txt"):
+            api_key = input("Please enter your openai api key: ")
+            with open(OTHER_FOLDER / "openai_api_key.txt", "w") as file:
+                file.write(api_key)
+
         with open(OTHER_FOLDER / "openai_api_key.txt") as file:
             os.environ["OPENAI_API_KEY"] = file.read().strip()
     openai.api_key = os.environ["OPENAI_API_KEY"]

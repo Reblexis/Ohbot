@@ -5,6 +5,7 @@ import openai
 from abc import ABC, abstractmethod
 
 from constants import *
+from DataManagment.file_system import ensure_open_ai_api
 
 
 class BrainController(ABC):
@@ -18,7 +19,6 @@ class BrainController(ABC):
 
 
 class GPT3BrainController(BrainController):
-    API_FILE_PATH = OTHER_FOLDER / "openai_api_key.txt"
 
     BEHAVIOUR_PROMPT = ("You are controlling a robot. You are responding to a content recognized from user's speech. You can answer with keyword pass if "
                         "you think that the robot should ignore the user's speech or if you have finished your response."
@@ -31,7 +31,7 @@ class GPT3BrainController(BrainController):
     def __init__(self, command_manager):
         super().__init__(command_manager)
         self.functions = None
-        openai.api_key = open(self.API_FILE_PATH, "r").read()
+        ensure_open_ai_api()
         self.messages = []
         self.functions = command_manager.get_commands_gpt3()
         self.initialize_messages()
@@ -60,19 +60,21 @@ class GPT3BrainController(BrainController):
         if recursion_counter > 3:
             return [{"content": "This is a scripted message. I don't know what to do."}]
 
+        print("Answering messages: " + str(self.messages))
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo-0613",
+            temperature=0,
             messages=self.messages,
             functions=self.functions,
             function_call='auto'
         )
-        response_message = response.choices[0].message
-        response_content = response_message.content
+        response_message = response["choices"][0]["message"]
+        print(response_message)
+        response_content = response_message["content"]
         if response_content is None:
             response_content = ""
 
-        self.messages.append({"role": "assistant", "content": response_content})
-
+        self.messages.append(response_message)
         if response_message.get("function_call"):
             function_feedback: str = self.command_manager.execute_command_gpt3(response_message.get("function_call"))
             self.messages.append({"role": "function", "name": response_message["function_call"]["name"],
@@ -80,7 +82,7 @@ class GPT3BrainController(BrainController):
 
         self.command_manager.say({"text": response_content.replace("Pass", "").replace("pass", "").strip()})
 
-        assistant_responses = [response_message]
+        assistant_responses = [response_content]
 
         if "pass" in response_content or "Pass" in response_content:
             return assistant_responses
@@ -95,8 +97,8 @@ class GPT3BrainController(BrainController):
         spoken_content: str = query["spoken_content"]
         self.messages.append({"role": "user", "content": spoken_content})
         responses: list = self.get_response()
-        print("MESSAGES:")
-        print(self.messages)
+        print("Assistant responses:")
+        print(responses)
         print("------------------")
 
         return responses

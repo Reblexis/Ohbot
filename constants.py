@@ -4,9 +4,9 @@ from pathlib import Path
 DEVICE = "cuda"
 
 DATA_FOLDER = Path(__file__).parent / "Data"
-ensure_dir(DATA_FOLDER)
 
 OTHER_FOLDER = DATA_FOLDER / "Other"
+OTHER_FOLDER.mkdir(parents=True, exist_ok=True)
 
 MODELS_FOLDER = DATA_FOLDER / "Models"
 MODELS_FOLDER.mkdir(parents=True, exist_ok=True)

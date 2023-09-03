@@ -165,13 +165,17 @@ class CommandManager:
                 "description": cmd_class().description,
                 "parameters": parameters
             })
-        print(functions)
         return functions
 
     def execute_command_gpt3(self, command_info: dict) -> str:
+        print(f"Executing command {command_info}")
+
         command_name: str = command_info["name"]
         command_args: dict = json.loads(command_info["arguments"])
-        return self.commands[command_name][0](command_args)
+        feedback_message: str = self.commands[command_name][0](command_args)
+        if feedback_message is None:
+            feedback_message = "None"
+        return feedback_message
 
     def initialize_command_parser(self):
         subparsers = self.parser.add_subparsers(dest='command_name')
@@ -192,13 +196,13 @@ class CommandManager:
     def initialize_core_controller(self, core_controller: CoreController):
         self.core_controller = core_controller
 
-    def reset(self, args: dict):
-        pass
+    def reset(self, args: dict) -> str:
+        return f"Successfully reset {args['aspect']}!"
 
     def rotate(self, args: dict) -> str:
         self.core_controller.physical_controller.rotate_head_to(horizontal=float(args["horizontal"]),
                                                                 vertical=float(args["vertical"]))
-        return "Successfully rotated!"
+        return f"Successfully rotated head to {args['horizontal']} horizontal and {args['vertical']} vertical!"
 
     def toggle(self, args: dict) -> str:
         feedback_message: str = ""
@@ -213,7 +217,7 @@ class CommandManager:
             elif args["state"] == "off" and self.core_controller.hearing_controller.listening:
                 self.core_controller.hearing_controller.disable()
 
-        return "Successfully toggled! You may have to reload the page to see the changes."
+        return f"Successfully toggled {args['obj']} {args['state']}!"
 
     def say(self, args: dict) -> str:
         text = args["text"]
