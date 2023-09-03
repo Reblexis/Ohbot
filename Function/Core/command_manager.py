@@ -1,6 +1,7 @@
 import re
 import argparse
 import shlex
+import json
 
 from Function.Core.core_controller import CoreController
 
@@ -76,7 +77,7 @@ class Command:
     def __str__(self):
         answer: str = f"Command: {self.name}\nDescription: {self.description}\nParameters:\n"
         for i, parameter in enumerate(self.parameters):
-            answer += f"{i+1}. {parameter}\n"
+            answer += f"{i + 1}. {parameter}\n"
         answer += f"Example usage: {self.name} "
         for parameter in self.parameters:
             if isinstance(parameter, TextParameter):
@@ -106,7 +107,7 @@ class RotateCommand(Command):
 
 class ToggleCommand(Command):
     def __init__(self):
-        super().__init__("set", "Changes state of a certain aspect of the robot. Toggles functionalities on or off.",
+        super().__init__("toggle", "Changes state of a certain aspect of the robot. Toggles functionalities on or off.",
                          [DiscreteParameter("obj", "The object to change the state of.", ["camera", "microphone"],
                                             DEFAULT_ARGUMENTS[TOGGLE_COMMAND_NAME]["obj"]),
                           DiscreteParameter("state", "The state to change to.", ["on", "off"],
@@ -130,15 +131,47 @@ class HelpCommand(Command):
 
 class CommandManager:
 
-    def __init__(self, core_controller: CoreController):
+    def __init__(self):
         self.commands = {RESET_COMMAND_NAME: (self.reset, ResetCommand), ROTATE_COMMAND_NAME:
             (self.rotate, RotateCommand),
                          TOGGLE_COMMAND_NAME: (self.toggle, ToggleCommand), SAY_COMMAND_NAME: (self.say, SayCommand),
                          HELP_COMMAND_NAME: (self.help, HelpCommand)}
-        self.core_controller = core_controller
+        self.core_controller = None
 
         self.parser = argparse.ArgumentParser(description='Process agent commands.')
         self.initialize_command_parser()
+
+    def get_commands_gpt3(self) -> list:
+        functions = []
+        for cmd_name, (func, cmd_class) in self.commands.items():
+            parameters = {"type": "object", "properties": {}, "required": []}
+            for parameter in cmd_class().parameters:
+                if isinstance(parameter, ContinuousParameter):
+                    parameters["properties"][parameter.name] = {"type": "number",
+                                                                "description": parameter.description}
+                    parameters["required"].append(parameter.name)
+                elif isinstance(parameter, DiscreteParameter):
+                    parameters["properties"][parameter.name] = {"type": "string",
+                                                                "description": parameter.description,
+                                                                "enum": parameter.options}
+                    parameters["required"].append(parameter.name)
+                elif isinstance(parameter, TextParameter):
+                    parameters["properties"][parameter.name] = {"type": "string",
+                                                                "description": parameter.description}
+                    parameters["required"].append(parameter.name)
+
+            functions.append({
+                "name": cmd_name,
+                "description": cmd_class().description,
+                "parameters": parameters
+            })
+        print(functions)
+        return functions
+
+    def execute_command_gpt3(self, command_info: dict) -> str:
+        command_name: str = command_info["name"]
+        command_args: dict = json.loads(command_info["arguments"])
+        return self.commands[command_name][0](command_args)
 
     def initialize_command_parser(self):
         subparsers = self.parser.add_subparsers(dest='command_name')
@@ -156,14 +189,19 @@ class CommandManager:
                 elif isinstance(param, TextParameter):
                     sub_parser.add_argument(f'--{param.name}', type=str, default=default_value)
 
+    def initialize_core_controller(self, core_controller: CoreController):
+        self.core_controller = core_controller
+
     def reset(self, args: dict):
         pass
 
-    def rotate(self, args: dict):
+    def rotate(self, args: dict) -> str:
         self.core_controller.physical_controller.rotate_head_to(horizontal=float(args["horizontal"]),
                                                                 vertical=float(args["vertical"]))
+        return "Successfully rotated!"
 
-    def toggle(self, args: dict):
+    def toggle(self, args: dict) -> str:
+        feedback_message: str = ""
         if args["obj"] == "camera":
             if args["state"] == "on" and not self.core_controller.vision_controller.show_camera:
                 self.core_controller.vision_controller.enable()
@@ -175,9 +213,12 @@ class CommandManager:
             elif args["state"] == "off" and self.core_controller.hearing_controller.listening:
                 self.core_controller.hearing_controller.disable()
 
-    def say(self, args: dict):
+        return "Successfully toggled! You may have to reload the page to see the changes."
+
+    def say(self, args: dict) -> str:
         text = args["text"]
         self.core_controller.speech_controller.process(text)
+        return "Successfully said!"
 
     def help(self, args: dict) -> str:
         command = args["command"]
@@ -193,7 +234,7 @@ class CommandManager:
         command_name = split_command[0]
         arg_list = split_command[1:]
         if command_name in self.commands:
-            print(f"Executing command {command_name} with args {args}")
+            print(f"Executing command {command_name} with args {arg_list}")
             parser = argparse.ArgumentParser(description=f"{command_name} command parser")
             for parameter in self.commands[command_name][1]().parameters:
                 if isinstance(parameter, ContinuousParameter):

@@ -6,18 +6,23 @@ from Function.physical_controller import PhysicalController
 
 
 class CoreController:
-    def __init__(self):
+    def __init__(self, command_manager):
         print("INIT CORE CONTROLLER")
-        self.behaviour_controller = BehaviourController()
+        self.behaviour_controller = BehaviourController(command_manager)
         self.hearing_controller = HearingController()
         self.speech_controller = SpeechController()
         self.vision_controller = VisionController()
         self.physical_controller = PhysicalController()
 
+        command_manager.initialize_core_controller(self)
+
     def run(self):
         while True:
-            self.hearing_controller.step()
+            hearing_info: dict = self.hearing_controller.step()
+            if "speech_recognition" in hearing_info and hearing_info["speech_recognition"]["new_content"]:
+                print(hearing_info["speech_recognition"])
+
             self.vision_controller.step()
-            self.behaviour_controller.step()
+            self.behaviour_controller.step(hearing_info)
             self.speech_controller.step()
             self.physical_controller.step()

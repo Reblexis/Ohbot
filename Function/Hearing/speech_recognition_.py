@@ -32,7 +32,8 @@ class SpeechRecognitionController:
         "short_transcription": "",
         "long_transcription": "",
         "wake_word": False,
-        "is_speaking": True,
+        "is_speaking": False,
+        "new_content": False,
     }
 
     def __init__(self, chunk_sample_rate: int, bytes_per_sample: int):
@@ -49,7 +50,7 @@ class SpeechRecognitionController:
         self.listening_deep = False
         self.long_buffer: bytearray = bytearray(b'')  # Used to collect all the audio after the wake word is recognized
 
-        self.speech_recognition_info: dict = {}  # Storage for data, that will be returned to the hearing controller
+        self.speech_recognition_info: dict = self.SPEECH_RECOGNITION_INFO_BASE  # Storage for data, that will be returned to the hearing controller
         print("Speech recognition controller initialized!")
 
     def receive_chunk(self, chunk: bytes):
@@ -59,8 +60,11 @@ class SpeechRecognitionController:
         self.short_buffer.extend(chunk)
 
     def process(self) -> dict:
-        self.speech_recognition_info: dict = self.SPEECH_RECOGNITION_INFO_BASE.copy()
+        self.speech_recognition_info["new_content"] = False
+
         if len(self.short_buffer) >= self.SMALL_CHUNK_SIZE * self.bytes_per_second:
+            self.speech_recognition_info: dict = self.SPEECH_RECOGNITION_INFO_BASE.copy()
+            self.speech_recognition_info["new_content"] = True
             self.short_buffer_save = self.short_buffer.copy()
             self.short_buffer = self.short_buffer[len(self.short_buffer) -
                                                   int(self.SMALL_CHUNK_UPDATE * self.bytes_per_second):]
@@ -70,6 +74,7 @@ class SpeechRecognitionController:
 
     def process_short_buffer(self):
         transcription = self.transcribe_sr()
+        self.speech_recognition_info["is_speaking"] = (transcription != "")
         self.speech_recognition_info["short_transcription"] = transcription
         if any(word in transcription for word in self.WAKE_WORDS):
             self.speech_recognition_info["wake_word"] = True
@@ -77,14 +82,14 @@ class SpeechRecognitionController:
             self.listening_deep = True
 
         if transcription == "" and self.listening_deep:
-            self.speech_recognition_info["is_speaking"] = False
             self.listening_deep = False
             self.process_long_buffer()
             self.long_buffer = bytearray(b'')
 
     def process_long_buffer(self):
         transcription = self.transcribe_whisper()
-        self.speech_recognition_info["long_transcription"] = transcription
+        self.speech_recognition_info["long_transcription"] = transcription["text"]
+        print("Done transcribing long buffer")
 
     def transcribe_sr(self) -> str:
         data = np.frombuffer(self.short_buffer_save, dtype=np.float32)

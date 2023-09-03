@@ -46,9 +46,17 @@ class VisionController:
 
         return visualized_predictions
 
+    @staticmethod
+    def numpy_to_bytes(array_to_encode: np.ndarray):
+        _, buffer = cv2.imencode('.jpg', array_to_encode)
+        return buffer.tobytes()
+
     def gen_frames(self):
-        # Currently not supported
-        return
+        while self.show_camera:
+            numpy_buffer = self.get_frame()
+            buffer = self.numpy_to_bytes(numpy_buffer)
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + buffer + b'\r\n')
 
     def step(self):
         last_frame = self.get_frame()
