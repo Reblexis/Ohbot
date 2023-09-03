@@ -44,7 +44,7 @@ body, .text {
     align-items: center;
 }
 
-.error_message{
+.feedback_message{
     text-align: center;
     color: red;
     font-size: 20px;

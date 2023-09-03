@@ -226,6 +226,10 @@ class CommandManager:
 
     def help(self, args: dict) -> str:
         command = args["command"]
+
+        if command == "all":
+            return "Available commands: " + ", ".join(self.commands.keys())
+
         if command in self.commands:
             return str(self.commands[command][1]())
         return "No such command found."
@@ -253,8 +257,8 @@ class CommandManager:
             except SystemExit:
                 return False, "Invalid arguments."
 
-            self.commands[command_name][0](parsed_args)
-            return True, "correct"
+            command_feedback: str = self.commands[command_name][0](parsed_args)
+            return True, command_feedback
         else:
             return False, ("No such command found. Please type only a valid command and corresponding arguments. "
                            "Nothing else.")

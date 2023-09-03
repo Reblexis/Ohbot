@@ -20,6 +20,9 @@ class SpeechRecognitionController:
      some period of time)
     4. Transcribe the collected chunks using whisper
     """
+
+    LONG_BUFFER_PATH = OTHER_FOLDER / "long_buffer.wav"
+
     WAKE_WORDS = ["assistant"]
 
     SAMPLE_RATE = 16000
@@ -109,8 +112,8 @@ class SpeechRecognitionController:
     def transcribe_whisper(self) -> str:
         audio_data = np.frombuffer(self.long_buffer, dtype=np.float32)
         audio_data = fs.resample_audio(audio_data, self.chunk_sample_rate, self.SAMPLE_RATE)
-        fs.save_to_file(audio_data, Path("long_buffer.wav"), additional_info={"type": "audio", "sample_rate": 16000})
-        audio_data = open("long_buffer.wav", "rb")
+        fs.save_to_file(audio_data, self.LONG_BUFFER_PATH, additional_info={"type": "audio", "sample_rate": 16000})
+        audio_data = open(self.LONG_BUFFER_PATH, "rb")
         return openai.Audio.transcribe("whisper-1", audio_data)
 
     def transcribe_path(self, path: Path, precise: bool = False) -> str:

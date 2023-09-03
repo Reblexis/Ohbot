@@ -13,8 +13,8 @@ BOTTOM_LIP = 5
 EYE_TILT = 6
 MOTORS = [HEAD_NOD, HEAD_TURN, EYE_TURN, LID_BLINK, TOP_LIP, BOTTOM_LIP, EYE_TILT]
 
-MOTOR_UP_LIMITS = [90, 180, 140, 54, 99, 99, 165, 82]
-MOTOR_DOWN_LIMITS = [25, 0, 68, 6, 0, 0, 93, 14]
+MOTOR_UPPER_BOUNDS = [90, 180, 140, 54, 99, 99, 165, 82]
+MOTOR_LOWER_BOUNDS = [25, 0, 68, 6, 0, 0, 93, 14]
 
 
 class PhysicalController:
@@ -50,13 +50,13 @@ class PhysicalController:
 
     def rotate_head_horizontal(self, horizontal: float, speed: float = 0.5):
         self.attach(HEAD_TURN)
-        horizontal = denormalize(secure_val(horizontal, -1, 1), MOTOR_DOWN_LIMITS[HEAD_TURN], MOTOR_UP_LIMITS[HEAD_TURN])
+        horizontal = denormalize(secure_val(horizontal, -1, 1), MOTOR_LOWER_BOUNDS[HEAD_TURN], MOTOR_UPPER_BOUNDS[HEAD_TURN])
         msg = "m0" + str(HEAD_TURN) + "," + str(horizontal) + "," + str(speed) + "\n"
         self.ser.write(msg.encode('latin-1'))
 
     def rotate_head_vertical(self, vertical: float, speed: float = 0.5):
         self.attach(HEAD_NOD)
-        vertical = denormalize(secure_val(vertical, -1, 1), MOTOR_DOWN_LIMITS[HEAD_NOD], MOTOR_UP_LIMITS[HEAD_NOD])
+        vertical = denormalize(secure_val(vertical, -1, 1), MOTOR_LOWER_BOUNDS[HEAD_NOD], MOTOR_UPPER_BOUNDS[HEAD_NOD])
         msg = "m0" + str(HEAD_NOD) + "," + str(vertical) + "," + str(speed) + "\n"
         self.ser.write(msg.encode('latin-1'))
 

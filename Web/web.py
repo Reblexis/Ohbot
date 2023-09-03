@@ -52,10 +52,9 @@ class MainPage(MethodView):
 
     def command(self):
         command = request.form.get(self.COMMAND_INPUT)
-        if not self.command_manager.execute_command(command):
-            return render_template('main.html', error="Invalid command")
-
-        return self.get()
+        success, feedback = self.command_manager.execute_command(command)
+        return render_template('main.html', success=success, feedback=feedback,
+                               show_camera_feed=self.core_controller.vision_controller.show_camera)
 
 
 class CameraFeed(MethodView):

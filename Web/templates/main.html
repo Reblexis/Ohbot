@@ -17,9 +17,11 @@
                 <button type="submit" name="trigger" class="submit_button" id="command_button" value="command">Send</button>
             </form>
 
-            <div class="error_message">
-                {% if error %}
-                    <p id="error_message">Error: {{ error }}</p>
+            <div class="feedback_message">
+                {% if success %}
+                    <p style="color: black;">{{ feedback_message }}</p>
+                {% else %}
+                    <p style="color: red;">{{ feedback_message }}</p>
                 {% endif %}
             </div>
             <div class="col-lg-8  offset-lg-2">
