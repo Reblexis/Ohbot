@@ -10,6 +10,7 @@ import cv2
 import torch
 import openai
 
+from constants import *
 
 def clear_folder_content(folder_path: Path, including_folder: bool = False):
     if not os.path.exists(folder_path):
@@ -81,7 +82,7 @@ def load_file(file_path: Path):
 
 def ensure_open_ai_api():
     if not os.environ.get("OPENAI_API_KEY"):
-        with open("../Data/Other/openai_api_key.txt") as file:
+        with open(OTHER_FOLDER / "openai_api_key.txt") as file:
             os.environ["OPENAI_API_KEY"] = file.read().strip()
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
