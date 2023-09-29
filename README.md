@@ -7,6 +7,8 @@ You can read more details about the vision for this project [here](Documentation
 1. Clone the repository.
 2. Create your preferred virtual environment.
 3. Go to the repository folder and run `pip install -r requirements.txt` to install all the required packages.
+3. If you encounter any installation issues please make sure you have installed required libraries using following commands (on Ubuntu):
+`sudo apt-get install portaudio19-dev libcairo2-dev libgirepository1.0-dev pkg-config python3-dev`
 4. To use the trained models you have to retrieve them using git lfs like this: `git lfs pull`.
 5. You can now run the software by running [main.py](main.py).
 
