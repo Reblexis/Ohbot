@@ -1,7 +1,7 @@
 from collections import namedtuple
 from pathlib import Path
 
-DEVICE = "cuda"
+DEVICE = "cpu"
 
 DATA_FOLDER = Path(__file__).parent / "Data"
 
