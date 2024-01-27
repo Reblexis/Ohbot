@@ -38,7 +38,7 @@ class GPT3BrainController(BrainController):
     SAVED_MESSAGES_COUNT = 10
     INITIAL_MESSAGE_COUNT = 5
 
-    ASSISTANT_STREAK_LIMIT = 3
+    ASSISTANT_STREAK_LIMIT = 10
     MAX_TOKENS = 300
 
     def __init__(self, cm):
